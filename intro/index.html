@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hyatt Regency Panama City</title>
+<style>
+  html,body{margin:0;height:100%;background:#000;overflow:hidden}
+  canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+  .cap{position:fixed;left:0;right:0;text-align:center;color:#fff;opacity:0;pointer-events:none;
+       font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:300;letter-spacing:.42em;text-transform:uppercase;
+       text-shadow:0 1px 14px rgba(0,0,0,.55);will-change:opacity}
+  #cap1{bottom:16%;font-size:clamp(13px,1.6vw,20px)}
+  #cap1 small{display:block;margin-top:.9em;font-size:.62em;letter-spacing:.55em;opacity:.85}
+  #cap2{bottom:14%;font-size:clamp(12px,1.4vw,18px)}
+  #err{position:fixed;inset:auto 0 0 0;color:#c66;font:12px monospace;padding:6px;display:none;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="cap" id="cap1">Hyatt Regency<small>Panama City</small></div>
+<div class="cap" id="cap2">Regency Ballroom</div>
+<div id="err"></div>
+<script>
+(function(){
+'use strict';
+// ------------------------------------------------------------------ parametros
+const Q = new URLSearchParams(location.search);
+const FREEZE = Q.has('t') ? parseFloat(Q.get('t')) : null;
+const T1 = 2.6, T2 = 3.15, TEND = 7.8;             // fin fachada lenta | blanco / llegada salon | fin
+// geometria de cada foto: tamano con margen, foco (px), punto principal, referencia de profundidad inversa
+const META = {
+  ext:  {w:1653, h:2240, f:890,  cx:826.5, cy:1120, zref:5, padx:160, pady:120, focus:38, coc:70, zscale:200},
+  ball: {w:2000, h:1473, f:1000, cx:1000,  cy:805,  zref:3, padx:0,   pady:0,   focus:23, coc:32,  zscale:60}
+};
+const cv = document.getElementById('gl');
+const errBox = document.getElementById('err');
+function fail(m){ errBox.style.display='block'; errBox.textContent += m + '\n'; console.error(m); }
+
+const gl = cv.getContext('webgl2', {antialias:false, alpha:false, premultipliedAlpha:false, preserveDrawingBuffer:true, powerPreference:'high-performance'})
+        || cv.getContext('webgl',  {antialias:false, alpha:false, premultipliedAlpha:false, preserveDrawingBuffer:true});
+if(!gl){ fail('WebGL no disponible'); return; }
+const isGL2 = (typeof WebGL2RenderingContext !== 'undefined') && gl instanceof WebGL2RenderingContext;
+if(!isGL2 && !gl.getExtension('OES_element_index_uint')) fail('Sin indices de 32 bit');
+const aniso = gl.getExtension('EXT_texture_filter_anisotropic');
+
+// ------------------------------------------------------------------ shaders
+const VS_MESH = `attribute vec3 aPos; attribute vec2 aUv; uniform mat4 uPV, uV; varying vec2 vUv; varying float vZ;
+void main(){ vUv=aUv; gl_Position=uPV*vec4(aPos,1.0); vZ=-(uV*vec4(aPos,1.0)).z; }`;
+const FS_COLOR = `precision mediump float; varying vec2 vUv; uniform sampler2D uTex;
+void main(){ vec4 c=texture2D(uTex,vUv); if(c.a<0.004) discard; gl_FragColor=c; }`;
+const FS_DEPTH = `precision mediump float; varying vec2 vUv; varying float vZ; uniform sampler2D uTex; uniform float uZscale;
+void main(){ if(texture2D(uTex,vUv).a<0.5) discard; gl_FragColor=vec4(vZ/uZscale,0.0,0.0,1.0); }`;
+const VS_PTS = `attribute vec3 aPos; attribute float aSeed; uniform mat4 uPV, uV; uniform float uTime, uDpr; varying float vA;
+void main(){ vec3 p=aPos+vec3(sin(uTime*0.27+aSeed*6.1)*0.35, sin(uTime*0.19+aSeed*9.7)*0.22, sin(uTime*0.23+aSeed*3.3)*0.3);
+ vec4 vp=uV*vec4(p,1.0); gl_Position=uPV*vec4(p,1.0); float z=-vp.z; gl_PointSize=clamp(90.0/z,1.5,5.0)*uDpr;
+ vA=0.5+0.5*sin(uTime*1.7+aSeed*31.0); vA*=smoothstep(1.5,4.0,z); }`;
+const FS_PTS = `precision mediump float; varying float vA;
+void main(){ vec2 d=gl_PointCoord-0.5; float r=dot(d,d)*4.0; if(r>1.0) discard; float a=(1.0-r)*(1.0-r)*0.16*vA; gl_FragColor=vec4(vec3(1.0,0.93,0.8)*a,a); }`;
+const VS_QUAD = `attribute vec2 aP; varying vec2 vUv; void main(){ vUv=aP*0.5+0.5; gl_Position=vec4(aP,0.0,1.0); }`;
+const FS_BRIGHT = `precision mediump float; varying vec2 vUv; uniform sampler2D uT; uniform float uThr;
+void main(){ vec3 c=texture2D(uT,vUv).rgb; float l=dot(c,vec3(0.3,0.59,0.11)); gl_FragColor=vec4(c*smoothstep(uThr,1.0,l),1.0); }`;
+const FS_BLUR = `precision mediump float; varying vec2 vUv; uniform sampler2D uT; uniform vec2 uDir;
+void main(){ vec3 s=texture2D(uT,vUv).rgb*0.227;
+ s+=(texture2D(uT,vUv+uDir).rgb+texture2D(uT,vUv-uDir).rgb)*0.195;
+ s+=(texture2D(uT,vUv+uDir*2.0).rgb+texture2D(uT,vUv-uDir*2.0).rgb)*0.122;
+ s+=(texture2D(uT,vUv+uDir*3.0).rgb+texture2D(uT,vUv-uDir*3.0).rgb)*0.055;
+ s+=(texture2D(uT,vUv+uDir*4.0).rgb+texture2D(uT,vUv-uDir*4.0).rgb)*0.018;
+ gl_FragColor=vec4(s,1.0); }`;
+const FS_FINAL = `precision highp float; varying vec2 vUv;
+uniform sampler2D uScene,uDepth,uBloom; uniform vec2 uRes; uniform float uTime,uRadial,uWhite,uFade,uFocus,uCoc,uZscale,uBloomG,uGrain,uVig,uDpr;
+uniform vec2 uRadC; uniform vec3 uWhiteCol;
+float hash(vec2 p){ return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453); }
+void main(){
+  vec2 uv=vUv; vec2 px=1.0/uRes;
+  float z=texture2D(uDepth,uv).r*uZscale;
+  float coc=min(uCoc*abs(1.0/max(z,0.2)-1.0/uFocus),7.0)*uDpr;       // radio de desenfoque en px
+  vec2 dir=(uRadC-uv)*uRadial;                                        // blur radial hacia la entrada
+  float rnd=hash(uv*uRes)*0.25;
+  vec3 col=vec3(0.0);
+  for(int i=0;i<12;i++){
+    float a=float(i)*2.3999+rnd; float r=sqrt((float(i)+0.5)/12.0);
+    vec2 o=vec2(cos(a),sin(a))*r*coc*px + dir*((float(i)+hash(uv*uRes+float(i)))/12.0);
+    col+=texture2D(uScene,uv+o).rgb;
+  }
+  col/=12.0;
+  col+=texture2D(uBloom,uv).rgb*uBloomG;
+  // gradacion: contraste suave, sombras ligeramente frias, luces calidas, saturacion +5%
+  float l=dot(col,vec3(0.3,0.59,0.11));
+  col=mix(col,smoothstep(0.0,1.0,col),0.22);
+  col+=(0.5-l)*vec3(-0.015,0.0,0.03)*0.8;
+  col=mix(vec3(l),col,1.05);
+  col=col*0.97+0.012;
+  // vineta
+  vec2 q=(uv-0.5)*vec2(uRes.x/uRes.y,1.0);
+  col*=1.0-uVig*smoothstep(0.35,1.25,length(q)*1.15);
+  // flash blanco calido y fundido
+  col=mix(col,uWhiteCol,uWhite);
+  col*=uFade;
+  col+=(hash(uv*uRes+fract(uTime*7.1)*13.0)-0.5)*uGrain;
+  gl_FragColor=vec4(col,1.0);
+}`;
+
+function compile(type, src){ const s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) fail(gl.getShaderInfoLog(s)); return s; }
+function program(vs, fs, attrs){ const p=gl.createProgram(); gl.attachShader(p,compile(gl.VERTEX_SHADER,vs)); gl.attachShader(p,compile(gl.FRAGMENT_SHADER,fs));
+  attrs.forEach((a,i)=>gl.bindAttribLocation(p,i,a)); gl.linkProgram(p);
+  if(!gl.getProgramParameter(p,gl.LINK_STATUS)) fail(gl.getProgramInfoLog(p));
+  const u={}; const n=gl.getProgramParameter(p,gl.ACTIVE_UNIFORMS); for(let i=0;i<n;i++){ const nm=gl.getActiveUniform(p,i).name; u[nm]=gl.getUniformLocation(p,nm); }
+  return {p,u}; }
+const P_COLOR=program(VS_MESH,FS_COLOR,['aPos','aUv']), P_DEPTH=program(VS_MESH,FS_DEPTH,['aPos','aUv']),
+      P_PTS=program(VS_PTS,FS_PTS,['aPos','aSeed']), P_BRIGHT=program(VS_QUAD,FS_BRIGHT,['aP']),
+      P_BLUR=program(VS_QUAD,FS_BLUR,['aP']), P_FINAL=program(VS_QUAD,FS_FINAL,['aP']);
+
+// ------------------------------------------------------------------ utilidades GL
+const quadBuf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,quadBuf); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+function drawQuad(prog){ gl.useProgram(prog.p); gl.bindBuffer(gl.ARRAY_BUFFER,quadBuf); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0); gl.disableVertexAttribArray(1); gl.drawArrays(gl.TRIANGLE_STRIP,0,4); }
+function texFromImage(img, mips){ const t=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,t);
+  gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,img);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  if(mips && isGL2){ gl.generateMipmap(gl.TEXTURE_2D); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
+    if(aniso) gl.texParameterf(gl.TEXTURE_2D,aniso.TEXTURE_MAX_ANISOTROPY_EXT,Math.min(8,gl.getParameter(aniso.MAX_TEXTURE_MAX_ANISOTROPY_EXT))); }
+  else gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+  return t; }
+function makeFBO(w,h,depth){ const t=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,t);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  const f=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,f); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0);
+  let rb=null; if(depth){ rb=gl.createRenderbuffer(); gl.bindRenderbuffer(gl.RENDERBUFFER,rb); gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,w,h); gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,rb); }
+  if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE) fail('FBO incompleto');
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null); return {f,t,w,h,rb}; }
+function delFBO(o){ if(!o) return; gl.deleteFramebuffer(o.f); gl.deleteTexture(o.t); if(o.rb) gl.deleteRenderbuffer(o.rb); }
+
+// matrices (column-major)
+function perspective(fovy, aspect, n, f){ const t=1/Math.tan(fovy*Math.PI/360); return new Float32Array([t/aspect,0,0,0, 0,t,0,0, 0,0,(f+n)/(n-f),-1, 0,0,2*f*n/(n-f),0]); }
+function lookAt(e, c){ let zx=e[0]-c[0], zy=e[1]-c[1], zz=e[2]-c[2]; let l=Math.hypot(zx,zy,zz); zx/=l; zy/=l; zz/=l;
+  let xx=zz, xy=0, xz=-zx; l=Math.hypot(xx,xy,xz)||1; xx/=l; xy/=l; xz/=l;   // x = up(0,1,0) x z
+  const yx=zy*xz-zz*xy, yy=zz*xx-zx*xz, yz=zx*xy-zy*xx;
+  return new Float32Array([xx,yx,zx,0, xy,yy,zy,0, xz,yz,zz,0, -(xx*e[0]+xy*e[1]+xz*e[2]), -(yx*e[0]+yy*e[1]+yz*e[2]), -(zx*e[0]+zy*e[1]+zz*e[2]), 1]); }
+function mul(a,b){ const o=new Float32Array(16); for(let i=0;i<4;i++) for(let j=0;j<4;j++){ let s=0; for(let k=0;k<4;k++) s+=a[k*4+j]*b[i*4+k]; o[i*4+j]=s; } return o; }
+const lerp=(a,b,t)=>a+(b-a)*t, lerp3=(a,b,t)=>[lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];
+const clamp01=x=>Math.min(1,Math.max(0,x)), ss=(a,b,x)=>{ x=clamp01((x-a)/(b-a)); return x*x*(3-2*x); };
+
+// punto de la foto (px, py en coordenadas de la foto sin margen, z metros) -> espacio 3D de la capa
+function imgPt(m, px, py, z){ px+=m.padx; py+=m.pady; return [(px-m.cx)/m.f*z, -(py-m.cy)/m.f*z, -z]; }
+
+// ------------------------------------------------------------------ mallas
+function buildMesh(m, depthImg, cols){
+  const rows=Math.round(cols*m.h/m.w);
+  const dc=document.createElement('canvas'); dc.width=depthImg.naturalWidth; dc.height=depthImg.naturalHeight;
+  const ctx=dc.getContext('2d'); ctx.drawImage(depthImg,0,0); const dd=ctx.getImageData(0,0,dc.width,dc.height).data; const dw=dc.width, dh=dc.height;
+  const g=(x,y)=>dd[(y*dw+x)*4];
+  function depthAt(u,v){ const x=u*(dw-1), y=v*(dh-1); const x0=Math.floor(x), y0=Math.floor(y), x1=Math.min(x0+1,dw-1), y1=Math.min(y0+1,dh-1); const fx=x-x0, fy=y-y0;
+    return (g(x0,y0)*(1-fx)+g(x1,y0)*fx)*(1-fy)+(g(x0,y1)*(1-fx)+g(x1,y1)*fx)*fy; }
+  const n=(cols+1)*(rows+1), verts=new Float32Array(n*5); let k=0;
+  for(let j=0;j<=rows;j++){ const v=j/rows; for(let i=0;i<=cols;i++){ const u=i/cols;
+    const z=m.zref/Math.max(depthAt(u,v)/255,0.0025); const px=u*m.w, py=v*m.h;
+    verts[k++]=(px-m.cx)/m.f*z; verts[k++]=-(py-m.cy)/m.f*z; verts[k++]=-z; verts[k++]=u; verts[k++]=v; } }
+  const idx=new Uint32Array(cols*rows*6); k=0;
+  for(let j=0;j<rows;j++) for(let i=0;i<cols;i++){ const a=j*(cols+1)+i, b=a+1, c=a+cols+1, d=c+1; idx[k++]=a; idx[k++]=c; idx[k++]=b; idx[k++]=b; idx[k++]=c; idx[k++]=d; }
+  const vb=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,vb); gl.bufferData(gl.ARRAY_BUFFER,verts,gl.STATIC_DRAW);
+  const ib=gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,idx,gl.STATIC_DRAW);
+  return {vb,ib,count:idx.length};
+}
+function drawMesh(prog, mesh, tex, pv, v, zscale){
+  gl.useProgram(prog.p); gl.bindBuffer(gl.ARRAY_BUFFER,mesh.vb);
+  gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,3,gl.FLOAT,false,20,0);
+  gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1,2,gl.FLOAT,false,20,12);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,mesh.ib);
+  gl.uniformMatrix4fv(prog.u.uPV,false,pv); gl.uniformMatrix4fv(prog.u.uV,false,v);
+  if(prog.u.uZscale) gl.uniform1f(prog.u.uZscale,zscale);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,tex); gl.uniform1i(prog.u.uTex,0);
+  gl.drawElements(gl.TRIANGLES,mesh.count,gl.UNSIGNED_INT,0);
+}
+// particulas de polvo iluminado en el salon
+const NP=170, pts=new Float32Array(NP*4); { let s=7; const rnd=()=>{ s=(s*16807)%2147483647; return s/2147483647; };
+  for(let i=0;i<NP;i++){ pts[i*4]=(rnd()*2-1)*5.5; pts[i*4+1]=0.2+rnd()*2.1; pts[i*4+2]=-(3+rnd()*9); pts[i*4+3]=rnd(); } }
+const ptsBuf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,ptsBuf); gl.bufferData(gl.ARRAY_BUFFER,pts,gl.STATIC_DRAW);
+function drawPoints(pv, v, time, dpr){ gl.useProgram(P_PTS.p); gl.bindBuffer(gl.ARRAY_BUFFER,ptsBuf);
+  gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,3,gl.FLOAT,false,16,0); gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1,1,gl.FLOAT,false,16,12);
+  gl.uniformMatrix4fv(P_PTS.u.uPV,false,pv); gl.uniformMatrix4fv(P_PTS.u.uV,false,v); gl.uniform1f(P_PTS.u.uTime,time); gl.uniform1f(P_PTS.u.uDpr,dpr);
+  gl.depthMask(false); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE,gl.ONE); gl.drawArrays(gl.POINTS,0,NP); gl.disable(gl.BLEND); gl.depthMask(true); }
+
+// ------------------------------------------------------------------ camara por tiempo
+function camExt(t, portrait){
+  const m=META.ext;
+  const A = portrait ? {eye:[0,0,0],         tgt:[700,1000,30], fov:86} : {eye:[0,0,0],          tgt:[690,540,40],  fov:42};
+  const B = portrait ? {eye:[0.25,-0.15,-2.6], tgt:[740,1330,28], fov:70} : {eye:[0.2,-0.1,-2.2], tgt:[745,1340,28], fov:41};
+  const x=clamp01(t/T1), p=x*x*(2-x);                      // arranca suave, llega con velocidad
+  let eye=lerp3(A.eye,B.eye,p), tgt=lerp3(imgPt(m,...A.tgt),imgPt(m,...B.tgt),p), fov=lerp(A.fov,B.fov,p);
+  let radial=0, bloom=0.38, white=0;
+  if(t>T1){ const q=clamp01((t-T1)/(T2-T1)), e=0.25*q+0.75*q*q;   // empuje acelerado hacia la entrada
+    const arch=imgPt(m,760,1700,28); const bt=imgPt(m,...B.tgt);
+    eye=[B.eye[0]+(arch[0]-B.eye[0])*e*0.74, B.eye[1]+(arch[1]-B.eye[1])*e*0.74, B.eye[2]+(arch[2]-B.eye[2])*e*0.74];
+    tgt=lerp3(bt,arch,Math.min(1,q*1.8)); fov=lerp(B.fov,26,e);
+    radial=0.45*e; bloom=0.38+1.6*e; white=ss(0.62,1.0,q); }
+  return {eye,tgt,fov,radial,bloom,white};
+}
+function camBall(t, portrait){
+  const m=META.ball;
+  const A = portrait ? {eye:[0,0,0], tgt:[1000,750,20], fov:64} : {eye:[0,0,0], tgt:[1000,760,20], fov:57};
+  const B = portrait ? {eye:[0.1,0.04,-0.55], tgt:[1000,790,23], fov:42} : {eye:[0.1,0.04,-0.5], tgt:[1000,790,23], fov:38};
+  const x=clamp01((t-T2)/(TEND-T2)), p=1-Math.pow(1-x,2.2);      // llega rapido y se asienta
+  const amp=Math.pow(1-x,1.5);
+  const eye=lerp3(A.eye,B.eye,p); eye[0]+=0.05*amp*Math.sin(t*0.8); eye[1]+=0.025*amp*Math.sin(t*1.25+0.7);
+  const tgt=lerp3(imgPt(m,...A.tgt),imgPt(m,...B.tgt),p); tgt[0]+=0.05*amp*Math.sin(t*0.8)*0.3;
+  const fov=lerp(A.fov,B.fov,p);
+  const arrive=1-ss(T2,T2+0.55,t);
+  return {eye,tgt,fov,radial:0.22*arrive,bloom:0.5*(1+0.07*Math.sin(t*7.3)+0.05*Math.sin(t*11.1)),white:1-ss(T2,T2+0.5,t)};
+}
+
+// ------------------------------------------------------------------ carga
+const SRC={hotel:'img/ext_hotel.webp', bg:'img/ext_bg.webp', hotelD:'img/ext_hotel_depth.png', bgD:'img/ext_bg_depth.png', ball:'img/ball.webp', ballD:'img/ball_depth.png'};
+const IM={}; let pending=Object.keys(SRC).length;
+Object.keys(SRC).forEach(k=>{ const im=new Image(); im.onload=()=>{ IM[k]=im; if(--pending===0) start(); }; im.onerror=()=>fail('No se pudo cargar '+SRC[k]); im.src=SRC[k]; });
+
+let TEX, MESH, fboScene, fboDepth, fboB1, fboB2, W=0, H=0, DPR=1, t0=null;
+function resize(){ const dpr=Math.min(window.devicePixelRatio||1,1.5); const w=Math.round(cv.clientWidth*dpr), h=Math.round(cv.clientHeight*dpr);
+  if(w===W && h===H) return; W=w; H=h; DPR=dpr; cv.width=w; cv.height=h;
+  [fboScene,fboDepth,fboB1,fboB2].forEach(delFBO);
+  fboScene=makeFBO(w,h,true); const qw=Math.max(1,w>>2), qh=Math.max(1,h>>2); fboDepth=makeFBO(qw,qh,true); fboB1=makeFBO(qw,qh,false); fboB2=makeFBO(qw,qh,false); }
+
+function start(){
+  TEX={hotel:texFromImage(IM.hotel,true), bg:texFromImage(IM.bg,true), ball:texFromImage(IM.ball,true)};
+  MESH={hotel:buildMesh(META.ext,IM.hotelD,320), bg:buildMesh(META.ext,IM.bgD,80), ball:buildMesh(META.ball,IM.ballD,400)};
+  window.addEventListener('resize',resize); resize();
+  requestAnimationFrame(frame);
+}
+const cap1=document.getElementById('cap1'), cap2=document.getElementById('cap2');
+window.__frames=0;
+function frame(now){
+  resize();
+  if(t0===null) t0=now;
+  const t = FREEZE!==null ? FREEZE : (now-t0)/1000;
+  const portrait = W<H, aspect=W/H;
+  const sceneBall = t>=T2;
+  const cam = sceneBall ? camBall(t,portrait) : camExt(t,portrait);
+  const m = sceneBall ? META.ball : META.ext;
+  const proj=perspective(cam.fov,aspect,0.3,6000), view=lookAt(cam.eye,cam.tgt), pv=mul(proj,view);
+
+  // 1) escena a color
+  gl.bindFramebuffer(gl.FRAMEBUFFER,fboScene.f); gl.viewport(0,0,W,H); gl.clearColor(0,0,0,1); gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LEQUAL); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  gl.disable(gl.BLEND);
+  if(sceneBall){ drawMesh(P_COLOR,MESH.ball,TEX.ball,pv,view,0); drawPoints(pv,view,t,DPR); }
+  else { drawMesh(P_COLOR,MESH.bg,TEX.bg,pv,view,0);
+         gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA); drawMesh(P_COLOR,MESH.hotel,TEX.hotel,pv,view,0); gl.disable(gl.BLEND); }
+  // 2) profundidad (1/4) para el desenfoque de campo
+  gl.bindFramebuffer(gl.FRAMEBUFFER,fboDepth.f); gl.viewport(0,0,fboDepth.w,fboDepth.h); gl.clearColor(1,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  if(sceneBall) drawMesh(P_DEPTH,MESH.ball,TEX.ball,pv,view,m.zscale);
+  else { drawMesh(P_DEPTH,MESH.bg,TEX.bg,pv,view,m.zscale); drawMesh(P_DEPTH,MESH.hotel,TEX.hotel,pv,view,m.zscale); }
+  gl.disable(gl.DEPTH_TEST);
+  // 3) bloom: umbral + blur separable (2 pasadas)
+  gl.bindFramebuffer(gl.FRAMEBUFFER,fboB1.f); gl.viewport(0,0,fboB1.w,fboB1.h);
+  gl.useProgram(P_BRIGHT.p); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,fboScene.t); gl.uniform1i(P_BRIGHT.u.uT,0); gl.uniform1f(P_BRIGHT.u.uThr,sceneBall?0.74:0.70); drawQuad(P_BRIGHT);
+  for(let i=0;i<2;i++){
+    gl.bindFramebuffer(gl.FRAMEBUFFER,fboB2.f); gl.useProgram(P_BLUR.p); gl.bindTexture(gl.TEXTURE_2D,fboB1.t); gl.uniform1i(P_BLUR.u.uT,0); gl.uniform2f(P_BLUR.u.uDir,1.6/fboB1.w,0); drawQuad(P_BLUR);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,fboB1.f); gl.bindTexture(gl.TEXTURE_2D,fboB2.t); gl.uniform2f(P_BLUR.u.uDir,0,1.6/fboB1.h); drawQuad(P_BLUR);
+  }
+  // 4) composicion final
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null); gl.viewport(0,0,W,H);
+  gl.useProgram(P_FINAL.p);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,fboScene.t); gl.uniform1i(P_FINAL.u.uScene,0);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,fboDepth.t); gl.uniform1i(P_FINAL.u.uDepth,1);
+  gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D,fboB1.t); gl.uniform1i(P_FINAL.u.uBloom,2);
+  const u=P_FINAL.u;
+  gl.uniform2f(u.uRes,W,H); gl.uniform1f(u.uTime,t); gl.uniform1f(u.uDpr,DPR);
+  gl.uniform1f(u.uRadial,cam.radial); gl.uniform1f(u.uWhite,cam.white); gl.uniform3f(u.uWhiteCol,1.0,0.94,0.82);
+  gl.uniform1f(u.uFade,ss(0,0.7,t)); gl.uniform1f(u.uFocus,m.focus); gl.uniform1f(u.uCoc,m.coc); gl.uniform1f(u.uZscale,m.zscale);
+  gl.uniform1f(u.uBloomG,cam.bloom); gl.uniform1f(u.uGrain,0.022); gl.uniform1f(u.uVig,sceneBall?0.32:0.38);
+  // centro del blur radial: la entrada (proyectada) en la fachada, el centro en el salon
+  let rc=[0.5,0.5];
+  if(!sceneBall){ const a=imgPt(META.ext,760,1700,28); const c=[pv[0]*a[0]+pv[4]*a[1]+pv[8]*a[2]+pv[12], pv[1]*a[0]+pv[5]*a[1]+pv[9]*a[2]+pv[13], pv[3]*a[0]+pv[7]*a[1]+pv[11]*a[2]+pv[15]]; if(c[2]>0.01) rc=[c[0]/c[2]*0.5+0.5, c[1]/c[2]*0.5+0.5]; }
+  gl.uniform2f(u.uRadC,rc[0],rc[1]);
+  drawQuad(P_FINAL);
+
+  cap1.style.opacity = ss(0.7,1.4,t)*(1-ss(2.1,2.5,t));
+  cap2.style.opacity = ss(4.2,4.9,t)*(1-ss(6.4,6.9,t));
+  window.__frames++;
+  requestAnimationFrame(frame);
+}
+})();
+</script>
+</body>
+</html>
