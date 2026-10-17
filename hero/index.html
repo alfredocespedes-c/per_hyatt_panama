@@ -24,6 +24,9 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .head{position:absolute;left:0;right:0;top:calc(80px + env(safe-area-inset-top));padding:0 22px;z-index:2;will-change:transform,opacity}
 .eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#c9d6ff;margin-bottom:12px;font-weight:700}
 .display{margin:0;font-weight:900;text-transform:uppercase;letter-spacing:.01em;line-height:.92;font-size:clamp(48px,14vw,128px)}
+.lock{display:flex;align-items:center;gap:.18em}
+.lock .x{font-weight:300;font-size:.42em;color:#c9d6ff}
+.plogo{width:.82em;height:.82em;object-fit:contain;filter:drop-shadow(0 8px 24px rgba(0,0,0,.45))}
 .display em{font-style:normal;display:block;font-weight:300;letter-spacing:.18em;font-size:.42em;margin-top:.25em;color:#fff;font-weight:400}
 .bar{width:56px;height:6px;border-radius:3px;background:var(--red);margin:22px 0 0}
 .lede{margin:16px 0 0;max-width:30ch;color:#dde4f3;font-size:16px;line-height:1.45;text-shadow:0 1px 14px rgba(10,16,32,.7)}
@@ -32,6 +35,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 @media (min-width:820px){
  .head{padding:0 0 0 56px;top:50%;transform:translateY(-50%);max-width:44%}
  .lede{font-size:18px}.eyebrow{font-size:12px}
+ .display{font-size:clamp(48px,7.4vw,112px)}
  .nav{right:auto;width:46%;padding:22px 40px 0}
  .start{display:inline-block!important}
  .frame{left:48%;right:32px;top:32px;bottom:32px;border-radius:28px;border-color:rgba(42,68,152,.7);box-shadow:0 40px 90px rgba(0,0,0,.5)}
@@ -72,7 +76,7 @@ button.go:active{transform:scale(.97)}
   <nav class="nav"><b>Hyatt Regency</b><a class="pill" href="#survey">Survey</a></nav>
   <div class="head" id="head">
    <div class="eyebrow">Panama City · Obarrio</div>
-   <h1 class="display">Hyatt<em>Regency</em></h1>
+   <h1 class="display"><span class="lock">Hyatt<span class="x">×</span><img class="plogo" src="../assets/pepsi_globe.png" alt="Pepsi"></span><em>Regency</em></h1>
    <div class="bar"></div>
    <p class="lede">Thank you for visiting our stand at Hyatt Regency Panama City.</p>
    <a class="pill start" href="#survey" style="display:none;margin-top:26px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;padding:14px 24px;background:var(--red);border-color:var(--red)">Start the form ↓</a>
