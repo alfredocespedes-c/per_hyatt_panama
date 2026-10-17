@@ -62,12 +62,26 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 button.go{width:100%;margin-top:8px;padding:16px;border:0;border-radius:999px;background:var(--red);color:#fff;box-shadow:0 12px 30px rgba(233,74,16,.35);font:700 15px inherit;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:transform .15s var(--ease)}
 button.go:active{transform:scale(.97)}
 .err{min-height:18px;margin-top:12px;font-size:13px;color:#ffb39a}
-#thanks{display:none;text-align:center}#thanks .check{width:72px;height:72px;margin:6px auto 16px;border-radius:50%;background:var(--red);display:grid;place-items:center;font-size:32px}
+#f{transition:opacity .7s var(--ease),filter .7s var(--ease),transform .7s var(--ease)}
+#f.out{opacity:0;filter:blur(14px);transform:scale(.97)}
+#thanks{display:none;text-align:center;opacity:0;filter:blur(10px);transition:opacity .8s var(--ease),filter .8s var(--ease)}
+#thanks.show{opacity:1;filter:none}
+.dl,#thanks .dl{text-decoration:none!important;display:flex;flex-direction:column;align-items:center;gap:14px;margin:26px auto 22px;text-decoration:none;color:#fff;width:max-content}
+.beat{width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:#fff;box-shadow:0 0 0 0 rgba(233,74,16,.6),0 14px 40px rgba(0,77,157,.5);animation:beat 1.6s var(--ease) infinite}
+.beat img{width:100px;height:100px;object-fit:contain}
+.dl:active .beat{transform:scale(.94)}
+.dlt{padding:13px 26px;border-radius:999px;background:var(--red);font-weight:800;font-size:14px;letter-spacing:.14em;text-transform:uppercase;box-shadow:0 12px 30px rgba(233,74,16,.35)}
+@keyframes beat{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(233,74,16,.55),0 14px 40px rgba(0,77,157,.5)}
+ 14%{transform:scale(1.08)}28%{transform:scale(1)}42%{transform:scale(1.05)}
+ 70%{transform:scale(1);box-shadow:0 0 0 26px rgba(233,74,16,0),0 14px 40px rgba(0,77,157,.5)}100%{transform:scale(1)}}
+button.go{animation:beatb 1.6s var(--ease) infinite}
+@keyframes beatb{0%,100%{box-shadow:0 12px 30px rgba(233,74,16,.35),0 0 0 0 rgba(233,74,16,.5)}60%{box-shadow:0 12px 30px rgba(233,74,16,.35),0 0 0 14px rgba(233,74,16,0)}}
+
 #thanks a{color:#c9d3e3;cursor:pointer;text-decoration:underline;font-size:13px}
 .mock{text-align:center;margin-top:18px;font-size:11px;color:#9aa4b8;letter-spacing:.08em}
 #admin{display:none;position:fixed;inset:0;overflow:auto;background:#f3f6ff;color:#000;padding:28px;z-index:9;font-size:14px}
 #admin table{border-collapse:collapse;width:100%;background:#fff}#admin th,#admin td{border:1px solid #ddd;padding:8px;text-align:left}
-@media (prefers-reduced-motion:reduce){.card{opacity:1;transform:none;transition:none}.cue{animation:none}}
+@media (prefers-reduced-motion:reduce){.beat,button.go{animation:none}.card{opacity:1;transform:none;transition:none}.cue{animation:none}}
 </style></head><body>
 
 <section class="hero">
@@ -97,7 +111,9 @@ button.go:active{transform:scale(.97)}
   <button class="go" type="submit">Send</button>
   <div class="err" id="err"></div>
  </form>
- <div id="thanks"><div class="check">✓</div><h3>Thank you</h3><p class="sub">Your answers were received. The Pepsi team will be in touch.</p><a id="again">New response</a></div>
+ <div id="thanks"><h3>Thank you</h3><p class="sub">Your answers were received. The Pepsi team will be in touch.</p>
+ <a class="dl" id="dl" href="../assets/pepsi_presentacion.pdf" download="Pepsi_Hyatt_Regency_Panama.pdf" aria-label="Download PPT"><span class="beat"><img src="../assets/pepsi_globe.png" alt=""></span><span class="dlt">Download PPT</span></a>
+ <a id="again">New response</a></div>
 </div><div class="mock">DEMO · answers are stored on this device only</div></section>
 <div id="admin"></div>
 
@@ -129,8 +145,8 @@ f.addEventListener('submit',e=>{e.preventDefault();const d=Object.fromEntries(ne
  if(!d.gm||!d.fb||!d.hotel){err.textContent='Please answer all four questions.';return}
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)){err.textContent='Please enter a valid e-mail.';$('email').focus();return}
  err.textContent='';const all=JSON.parse(localStorage.getItem(KEY)||'[]');all.push({...d,at:new Date().toISOString()});localStorage.setItem(KEY,JSON.stringify(all));
- f.style.display='none';$('thanks').style.display='block'});
-$('again').onclick=()=>{f.reset();f.style.display='';$('thanks').style.display='none'};
+ f.classList.add('out');setTimeout(()=>{f.style.display='none';const t=$('thanks');t.style.display='block';requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')))},reduce?0:700)});
+$('again').onclick=()=>{f.reset();$('thanks').classList.remove('show');$('thanks').style.display='none';f.style.display='';requestAnimationFrame(()=>f.classList.remove('out'))};
 if(new URLSearchParams(location.search).has('admin')){const a=$('admin'),rows=JSON.parse(localStorage.getItem(KEY)||'[]');a.style.display='block';
  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  a.innerHTML=`<h2>Responses (demo · this device) — ${rows.length}</h2><p><button id="csv">Download CSV</button></p><table><tr><th>Date</th><th>General Manager</th><th>F&amp;B Director</th><th>Hotel</th><th>E-mail</th></tr>${rows.map(r=>`<tr><td>${esc(r.at)}</td><td>${esc(r.gm)}</td><td>${esc(r.fb)}</td><td>${esc(r.hotel)}</td><td>${esc(r.email)}</td></tr>`).join('')}</table>`;
