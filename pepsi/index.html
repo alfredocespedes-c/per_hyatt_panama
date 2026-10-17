@@ -132,6 +132,7 @@ svg{display:block}
   box-shadow:0 12px 30px rgba(0,77,157,.45),inset 0 1px 0 rgba(255,255,255,.18);transition:transform .16s var(--ease),background .2s ease}
 .ppt svg{width:18px;height:18px}
 .ppt:active{transform:scale(.97)}
+.ppt[aria-busy=true]{opacity:.7;pointer-events:none}
 @media (hover:hover) and (pointer:fine){.ppt:hover{background:#0a5db5}}
 .link{background:none;border:0;padding:6px 8px;color:var(--ice);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;font-size:13px}
 #again{display:block;margin:0 auto}
@@ -349,6 +350,21 @@ f.addEventListener('submit',e=>{e.preventDefault();const d=Object.fromEntries(ne
    requestAnimationFrame(()=>requestAnimationFrame(()=>{t.classList.add('show');$('dl').focus({preventScroll:true})}))},reduce?0:420)});
 $('again').addEventListener('click',()=>{f.reset();inputs.forEach(i=>i.classList.remove('bad'));const t=$('thanks');t.classList.remove('show');t.style.display='none';f.style.display='';requestAnimationFrame(()=>f.classList.remove('out'));$('gm').focus({preventScroll:true})});
 
+// ---- descarga del PDF: abre la ventana de guardar (o el aviso de descarga en el celular), no el visor
+$('dl').addEventListener('click',async e=>{
+ e.preventDefault();const a=e.currentTarget,url=a.getAttribute('href'),name=a.getAttribute('download')||'presentation.pdf';
+ a.setAttribute('aria-busy','true');
+ try{
+  if(window.showSaveFilePicker){ // computador (Chrome/Edge): ventana "Guardar como"
+   let fh;try{fh=await showSaveFilePicker({suggestedName:name,types:[{description:'PDF',accept:{'application/pdf':['.pdf']}}]})}catch(x){if(x.name==='AbortError')return;throw x}
+   const r=await fetch(url);const wr=await fh.createWritable();await r.body.pipeTo(wr);return}
+  const r=await fetch(url);const b=await r.blob(); // celular y otros navegadores: forzar descarga
+  const u=URL.createObjectURL(new Blob([b],{type:'application/octet-stream'}));
+  const l=document.createElement('a');l.href=u;l.download=name;document.body.appendChild(l);l.click();l.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),30000);
+ }catch(x){location.href=url}
+ finally{a.removeAttribute('aria-busy')}
+});
 if(params.has('admin')){const a=$('admin'),rows=JSON.parse(localStorage.getItem(KEY)||'[]');a.style.display='block';
  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  a.innerHTML=`<h2>Responses (demo · this device) — ${rows.length}</h2><p><button id="csv" type="button">Download CSV</button></p><table><tr><th>Date</th><th>General Manager</th><th>F&amp;B Director</th><th>Hotel</th><th>E-mail</th></tr>${rows.map(r=>`<tr><td>${esc(r.at)}</td><td>${esc(r.gm)}</td><td>${esc(r.fb)}</td><td>${esc(r.hotel)}</td><td>${esc(r.email)}</td></tr>`).join('')}</table>`;
