@@ -1,93 +1,327 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8">
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Pepsi · Hyatt Regency Panama City</title><meta name="theme-color" content="#000">
-<link rel="preload" as="video" href="../video/pepsi.mp4">
-<style>:root{--bg:#0A1020;--deep:#171B36;--navy:#21244D;--ind:#28347C;--blue2:#2A4498;--blue:#004D9D;--red:#E94A10;--ice:#9fb3e8;--txt:#fff;--r:26px;--ease:cubic-bezier(.22,1,.36,1);--mut:#9aa4b8}
-*{box-sizing:border-box}html,body{margin:0;background:#000;color:#fff;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
-body.lock{overflow:hidden}
-#intro{position:fixed;inset:0;z-index:5;background:#000;transition:opacity .9s var(--ease)}
-#intro video{width:100%;height:100%;object-fit:contain;display:block}
-@media (max-aspect-ratio:3/4){#intro video{object-fit:cover}}
-#intro.out{opacity:0;pointer-events:none}
-#skip{position:fixed;right:18px;top:calc(14px + env(safe-area-inset-top));z-index:6;background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:9px 16px;font:600 13px/1 inherit;letter-spacing:.06em;backdrop-filter:blur(8px);cursor:pointer}
-#survey{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center}
-/* ---------- BRIDGE + SURVEY (Pepsi) ---------- */
-.bridge{text-align:center;padding:90px 22px 30px;color:var(--mut);font-size:12px;letter-spacing:.3em;text-transform:uppercase}
-.bridge i{display:block;width:1px;height:56px;margin:16px auto 0;background:linear-gradient(var(--mut),transparent)}
-#survey{position:relative;padding:40px 16px calc(90px + env(safe-area-inset-bottom));background:radial-gradient(circle at 50% 0,#004D9D 0 80px,#2A4498 80px 150px,#28347C 150px 230px,#21244D 230px 320px,#171B36 320px 420px,#0A1020 420px)}
-.card{width:min(560px,100%);margin:0 auto;background:rgba(10,16,32,.72);border:1px solid rgba(42,68,152,.7);border-radius:var(--r);padding:30px 24px 24px;box-shadow:0 40px 90px rgba(0,0,0,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
- opacity:0;transform:translateY(36px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
-.card.in{opacity:1;transform:none}
-.globe{width:64px;height:64px;margin:0 0 14px;object-fit:contain}
-.card .eb{color:var(--ice);font-size:11px;letter-spacing:.3em;text-transform:uppercase}
-.card h3{font-weight:900;text-transform:uppercase;font-size:clamp(24px,5vw,32px);letter-spacing:.02em;margin:10px 0 4px}
-.sub{color:#dde4f3;font-size:15px;margin:0 0 22px}
-.q{margin:0 0 15px}.q label{display:flex;gap:10px;align-items:center;font-size:14px;color:#e8edf5;margin-bottom:7px}
-.q .num{font-weight:800;background:var(--blue);border-radius:50%;width:22px;height:22px;min-width:22px;display:grid;place-items:center;font-size:12px}
-.q input{width:100%;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);color:#fff;font:16px inherit;outline:none;transition:border-color .2s,background .2s,box-shadow .2s}
-.q input:focus{border-color:#3b78d0;box-shadow:0 0 0 3px rgba(0,77,157,.4);background:rgba(255,255,255,.1)}
-button.go{width:100%;margin-top:8px;padding:16px;border:0;border-radius:999px;background:var(--red);color:#fff;box-shadow:0 12px 30px rgba(233,74,16,.35);font:700 15px inherit;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:transform .15s var(--ease)}
-button.go:active{transform:scale(.97)}
-.err{min-height:18px;margin-top:12px;font-size:13px;color:#ffb39a}
-#thanks{display:none;text-align:center}#thanks .check{width:72px;height:72px;margin:6px auto 16px;border-radius:50%;background:var(--red);display:grid;place-items:center;font-size:32px}
-#thanks a{color:#c9d3e3;cursor:pointer;text-decoration:underline;font-size:13px}
-.mock{text-align:center;margin-top:18px;font-size:11px;color:#9aa4b8;letter-spacing:.08em}
-#admin{display:none;position:fixed;inset:0;overflow:auto;background:#f3f6ff;color:#000;padding:28px;z-index:9;font-size:14px}
+<title>Pepsi · Hyatt Regency Panama City</title>
+<meta name="theme-color" content="#1a0a04">
+<meta name="description" content="Pepsi welcomes the Hyatt Regency Panama City team.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23004D9D'/%3E%3Cpath d='M4 30c20-10 36-10 56 0v8c-20-10-36-10-56 0z' fill='%23fff'/%3E%3Cpath d='M2 32a30 30 0 0 1 60-4c-20-10-40-10-60 4z' fill='%23E94A10'/%3E%3C/svg%3E">
+<link rel="preload" as="font" type="font/woff2" href="./media/fonts/marcellus.woff2" crossorigin>
+<style>
+@font-face{font-family:"Marcellus";src:url(./media/fonts/marcellus.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+:root{
+  --red:#E94A10;--blue:#004D9D;--blue2:#2A4498;--ind:#28347C;--navy:#21244D;--deep:#171B36;--ink:#0a0d1f;
+  --cola:#1a0a04;--cola2:#3a1507;--caramel:#b8692a;--foam:#f1dfc6;--cream:#e8d6c0;
+  --ice:#c7d2f2;--txt:#fff;
+  --ease:cubic-bezier(.16,1,.3,1);--ease-io:cubic-bezier(.77,0,.175,1);
+  --sans:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --serif:"Marcellus","Palatino Linotype","Book Antiqua",Georgia,serif;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--cola);color:var(--txt);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow:hidden;overscroll-behavior:none}
+::selection{background:var(--red);color:#fff}
+:focus{outline:none}
+:focus-visible{outline:2px solid #fff;outline-offset:3px;box-shadow:0 0 0 6px rgba(0,77,157,.55)}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+svg{display:block}
+
+/* ---------- STAGE: cola sea + cans ---------- */
+#stage{position:fixed;inset:0;background:#07030a;overflow:hidden}
+#bgsea{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;filter:blur(26px) brightness(.5) saturate(1.1);display:none}
+#col{position:absolute;inset:0;overflow:hidden;background:var(--cola)}
+#col video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;background:var(--cola)}
+#cans{z-index:2;transition:opacity .36s var(--ease),filter .36s var(--ease)}
+#cans.gone{opacity:0;filter:blur(6px);pointer-events:none;visibility:hidden;transition:opacity .36s var(--ease),filter .36s var(--ease),visibility 0s .36s}
+#veil{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .9s var(--ease);
+  background:
+    radial-gradient(120% 70% at 50% 42%,rgba(26,10,4,0) 30%,rgba(10,4,2,.55) 100%),
+    linear-gradient(180deg,rgba(10,4,2,.35) 0,rgba(10,4,2,0) 28%,rgba(10,4,2,0) 62%,rgba(10,4,2,.62) 100%)}
+#stage.dim #veil{opacity:1}
+@media (min-width:820px) and (min-aspect-ratio:4/5){
+  #bgsea{display:block}
+  #col{left:50%;top:0;bottom:0;right:auto;width:auto;aspect-ratio:9/16;transform:translateX(-50%);box-shadow:0 0 0 1px rgba(255,255,255,.06),0 40px 140px rgba(0,0,0,.65)}
+  #col video{object-fit:contain}
+}
+
+/* ---------- SKIP ---------- */
+#skip{position:fixed;z-index:20;right:16px;top:calc(14px + var(--sat));display:inline-flex;align-items:center;gap:6px;
+  padding:10px 12px 10px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.32);background:rgba(26,10,4,.38);
+  color:#fff;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  opacity:0;transform:translateY(-4px);transition:opacity .5s var(--ease) .6s,transform .5s var(--ease) .6s,background .2s ease}
+#skip.on{opacity:1;transform:none}
+#skip.hide{opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+#skip:active{transform:scale(.97)}
+#skip svg{width:14px;height:14px}
+@media (hover:hover) and (pointer:fine){#skip:hover{background:rgba(26,10,4,.6)}}
+
+/* ---------- HYATT COVER ---------- */
+#cover{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  padding:calc(40px + var(--sat)) 24px calc(40px + var(--sab));visibility:hidden;pointer-events:none}
+#cover.on{visibility:visible;pointer-events:auto}
+#cover.off{visibility:hidden;pointer-events:none;transition:visibility 0s .32s}
+#cover .a{opacity:0}
+#cover.on .a{animation:rise .9s var(--ease) both}
+#cover.on .a:nth-child(1){animation-delay:.05s}
+#cover.on .a:nth-child(2){animation-delay:.14s}
+#cover.on .a:nth-child(3){animation-delay:.24s}
+#cover.on .a:nth-child(4){animation-delay:.36s}
+#cover.on .a:nth-child(5){animation-delay:.46s}
+#cover.off .a{animation:sink .3s var(--ease) both}
+@keyframes rise{from{opacity:0;transform:translateY(16px) scale(.985);filter:blur(10px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes sink{from{opacity:1;transform:none;filter:blur(0)}to{opacity:0;transform:translateY(-10px) scale(.99);filter:blur(8px)}}
+.wel{margin:0 0 22px;font-family:var(--serif);font-size:15px;letter-spacing:.44em;text-transform:uppercase;color:var(--cream);text-indent:.44em}
+.mark{width:76px;height:76px;color:#fff;filter:drop-shadow(0 6px 24px rgba(0,0,0,.5))}
+.hy{margin:22px 0 0;font-family:var(--serif);font-weight:400;font-size:clamp(54px,15.5vw,104px);line-height:.92;letter-spacing:.14em;text-indent:.14em;
+  text-shadow:0 4px 30px rgba(0,0,0,.55),0 1px 0 rgba(0,0,0,.4)}
+.hy small{display:block;font-family:var(--sans);font-weight:600;font-size:clamp(11px,2.9vw,14px);letter-spacing:.34em;text-indent:.34em;margin-top:18px;color:var(--cream);white-space:nowrap}
+.rule{width:44px;height:1px;background:linear-gradient(90deg,transparent,var(--foam),transparent);margin:30px auto 32px;opacity:.9}
+.cta{display:inline-flex;align-items:center;gap:12px;border:0;border-radius:999px;background:var(--red);color:#fff;padding:18px 30px 18px 32px;
+  font-weight:800;font-size:14px;letter-spacing:.16em;text-transform:uppercase;
+  box-shadow:0 14px 40px rgba(233,74,16,.45),inset 0 1px 0 rgba(255,255,255,.22);
+  transition:transform .16s var(--ease),box-shadow .2s ease,background .2s ease}
+.cta svg{width:16px;height:16px;transition:transform .25s var(--ease)}
+.cta:active{transform:scale(.97);box-shadow:0 8px 24px rgba(233,74,16,.4)}
+@media (hover:hover) and (pointer:fine){.cta:hover{background:#f25a20;box-shadow:0 18px 48px rgba(233,74,16,.55),inset 0 1px 0 rgba(255,255,255,.22)}.cta:hover svg{transform:translateX(3px)}}
+
+/* ---------- SURVEY: glass card over the cola ---------- */
+#survey{position:fixed;inset:0;z-index:12;overflow:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent;
+  visibility:hidden;pointer-events:none}
+#survey::-webkit-scrollbar{width:8px}#survey::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
+#survey.on{visibility:visible;pointer-events:auto}
+.wrap{min-height:100%;display:grid;place-items:center;padding:calc(22px + var(--sat)) 16px calc(28px + var(--sab))}
+.card{width:min(540px,100%);border-radius:28px;padding:30px 24px 24px;position:relative;
+  background:linear-gradient(160deg,rgba(33,36,77,.50),rgba(23,27,54,.60) 60%,rgba(10,13,31,.66));
+  border:1px solid rgba(199,210,242,.24);
+  box-shadow:0 30px 90px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.16);
+  backdrop-filter:blur(14px) saturate(1.25);-webkit-backdrop-filter:blur(14px) saturate(1.25);
+  opacity:0;transform:translateY(22px) scale(.975);filter:blur(10px);
+  transition:opacity .55s var(--ease),transform .55s var(--ease),filter .55s var(--ease)}
+#survey.on .card{opacity:1;transform:none;filter:blur(0)}
+.card .top,.card .q,.card .go,.card .err{--i:0;opacity:0;transform:translateY(8px);transition:opacity .45s var(--ease),transform .45s var(--ease)}
+#survey.on .card .top,#survey.on .card .q,#survey.on .card .go,#survey.on .card .err{opacity:1;transform:none;transition-delay:calc(.12s + var(--i) * .05s)}
+.card .q:nth-of-type(1){--i:1}.card .q:nth-of-type(2){--i:2}.card .q:nth-of-type(3){--i:3}.card .q:nth-of-type(4){--i:4}.card .q:nth-of-type(5){--i:4}
+.card .go,.card .err{--i:5}
+.globe{width:60px;height:60px;object-fit:contain;filter:drop-shadow(0 6px 16px rgba(0,0,0,.45))}
+.eb{margin:14px 0 0;color:var(--ice);font-size:11px;letter-spacing:.3em;text-transform:uppercase}
+.card h2{margin:8px 0 6px;font-weight:900;text-transform:uppercase;font-size:clamp(24px,5.6vw,31px);letter-spacing:.02em;line-height:1.05;text-wrap:balance}
+.sub{margin:0 0 22px;color:#e4eaf8;font-size:15px;line-height:1.45;max-width:46ch}
+.q{margin:0 0 14px}
+.q label{display:flex;gap:10px;align-items:center;font-size:14px;color:#eef2fb;margin-bottom:7px}
+.num{font-weight:800;background:var(--blue);color:#fff;border-radius:50%;width:22px;height:22px;min-width:22px;display:grid;place-items:center;font-size:12px;font-variant-numeric:tabular-nums}
+.q input{width:100%;padding:14px 15px;border-radius:14px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.07);color:#fff;font:16px var(--sans);
+  caret-color:var(--red);transition:border-color .2s ease,background .2s ease,box-shadow .2s ease}
+.q input::placeholder{color:rgba(199,210,242,.55)}
+.q input:focus{border-color:#4d8ae0;box-shadow:0 0 0 3px rgba(0,77,157,.45);background:rgba(255,255,255,.11);outline:none}
+.q input.bad{border-color:#ff8a65;box-shadow:0 0 0 3px rgba(233,74,16,.3)}
+.go{width:100%;margin-top:8px;padding:17px;border:0;border-radius:999px;background:var(--red);color:#fff;font-weight:800;font-size:15px;letter-spacing:.12em;text-transform:uppercase;
+  box-shadow:0 12px 30px rgba(233,74,16,.38),inset 0 1px 0 rgba(255,255,255,.2);transition:transform .16s var(--ease),background .2s ease,opacity .45s var(--ease)}
+.go:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.go:hover{background:#f25a20}}
+.err{min-height:20px;margin-top:12px;font-size:13px;color:#ffb39a;line-height:1.3}
+#f{transition:opacity .45s var(--ease),filter .45s var(--ease),transform .45s var(--ease)}
+#f.out{opacity:0;filter:blur(12px);transform:scale(.98);pointer-events:none}
+#thanks{display:none;text-align:center;opacity:0;filter:blur(10px);transform:scale(.985);transition:opacity .6s var(--ease),filter .6s var(--ease),transform .6s var(--ease)}
+#thanks.show{opacity:1;filter:none;transform:none}
+.check{width:84px;height:84px;margin:6px auto 18px;border-radius:50%;background:var(--red);display:grid;place-items:center;box-shadow:0 14px 40px rgba(233,74,16,.45),inset 0 1px 0 rgba(255,255,255,.25)}
+.check svg{width:40px;height:40px}
+.check .ring{stroke-dasharray:160;stroke-dashoffset:160}
+.check .tick{stroke-dasharray:40;stroke-dashoffset:40}
+#thanks.show .check .ring{animation:draw .7s var(--ease) .15s forwards}
+#thanks.show .check .tick{animation:draw .45s var(--ease) .55s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+#thanks h2{margin-bottom:8px}
+#thanks .sub{margin-left:auto;margin-right:auto}
+.ppt{display:inline-flex;align-items:center;gap:12px;margin:8px auto 18px;padding:15px 24px 15px 26px;border-radius:999px;background:var(--blue);color:#fff;text-decoration:none;font-weight:700;font-size:14px;letter-spacing:.08em;
+  box-shadow:0 12px 30px rgba(0,77,157,.45),inset 0 1px 0 rgba(255,255,255,.18);transition:transform .16s var(--ease),background .2s ease}
+.ppt svg{width:18px;height:18px}
+.ppt:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.ppt:hover{background:#0a5db5}}
+.link{background:none;border:0;padding:6px 8px;color:var(--ice);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;font-size:13px}
+#again{display:block;margin:0 auto}
+.after{display:flex;flex-direction:column;align-items:center;gap:6px;margin:18px auto 0;width:min(540px,100%)}
+.mock{margin:4px 0 0;font-size:11px;color:rgba(232,214,192,.75);letter-spacing:.1em;text-align:center}
+
+/* ---------- ADMIN ---------- */
+#admin{display:none;position:fixed;inset:0;overflow:auto;background:#f3f6ff;color:#000;padding:28px;z-index:40;font-size:14px;font-family:var(--sans)}
 #admin table{border-collapse:collapse;width:100%;background:#fff}#admin th,#admin td{border:1px solid #ddd;padding:8px;text-align:left}
-@media (prefers-reduced-motion:reduce){.card{opacity:1;transform:none;transition:none}.cue{animation:none}}
+#admin button{padding:8px 14px;border-radius:8px;border:1px solid #99a;background:#fff}
 
-#replay{display:block;margin:14px auto 0;background:none;border:0;color:#c9d3e3;text-decoration:underline;font-size:13px;cursor:pointer}
+/* ---------- REDUCED MOTION ---------- */
+@media (prefers-reduced-motion:reduce){
+  #cover.on .a{animation:fade .5s ease both}
+  #cover.off .a{animation:fadeout .2s ease both}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  @keyframes fadeout{from{opacity:1}to{opacity:0}}
+  .card,#survey.on .card{transform:none;filter:none;transition:opacity .3s ease}
+  .card .q,.card .top,.card .go,.card .err{transform:none;transition:opacity .3s ease}
+  #f,#f.out,#thanks,#thanks.show{transform:none;filter:none;transition:opacity .3s ease}
+  #cans,#cans.gone{filter:none;transition:opacity .3s ease}
+  .cta svg,.cta:hover svg{transition:none;transform:none}
+  #veil{transition:none}
+}
+</style>
+</head>
+<body>
 
-#endcard{position:fixed;inset:0;z-index:7;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .8s var(--ease);background:radial-gradient(70% 50% at 50% 45%,rgba(10,16,32,.45),rgba(10,16,32,.85))}
-#endcard.on{opacity:1;pointer-events:auto}
-#endcard .hx{font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:#fff;opacity:.9;text-shadow:0 2px 18px rgba(0,0,0,.6)}
-#endcard .hn{font-family:Georgia,"Times New Roman",serif;font-size:clamp(44px,13vw,88px);letter-spacing:.12em;line-height:1;margin:14px 0 6px;text-shadow:0 6px 40px rgba(0,0,0,.65);transform:translateY(16px);transition:transform 1s var(--ease)}
-#endcard .hn small{display:block;font-family:"Segoe UI",system-ui,sans-serif;font-weight:700;font-size:.2em;letter-spacing:.26em;margin-top:14px;white-space:nowrap}
-#endcard.on .hn{transform:none}
-#endcard .ln{width:56px;height:2px;background:#fff;opacity:.7;margin:18px auto 26px}
-#endcard button{border:0;border-radius:999px;background:var(--red);color:#fff;padding:16px 30px;font:800 14px inherit;letter-spacing:.16em;text-transform:uppercase;box-shadow:0 12px 34px rgba(233,74,16,.5);cursor:pointer;opacity:0;transform:translateY(10px);transition:opacity .6s .6s,transform .6s .6s var(--ease)}
-#endcard.on button{opacity:1;transform:none}
-a.ppt{display:inline-block;margin:18px auto 6px;padding:14px 22px;border-radius:999px;background:var(--blue);color:#fff;text-decoration:none;font:700 14px inherit;letter-spacing:.08em;box-shadow:0 10px 26px rgba(0,77,157,.45)}
-</style></head><body class="lock">
-<div id="intro"><video id="v" src="../video/pepsi.mp4" poster="../video/pepsi_poster.jpg" autoplay muted playsinline preload="auto"></video></div>
-<div id="endcard" aria-hidden="true"><div class="hx">Welcome</div><div class="hn">HYATT<small>REGENCY · PANAMA&nbsp;CITY</small></div><div class="ln"></div><button id="go" type="button">Start the survey</button></div>
-<button id="skip" type="button">Skip intro ›</button>
-<section id="survey" aria-label="Survey"><div class="card" id="card">
- <form id="f" novalidate>
-  <img class="globe" src="../assets/pepsi_globe.png" alt="Pepsi">
-  <div class="eb">Pepsi · Hyatt Regency Panama&nbsp;City</div>
-  <h3>Welcome, Hyatt&nbsp;team</h3><p class="sub">Please complete this form so our team can follow up with you after your visit to our stand.</p>
-  <div class="q"><label for="gm"><span class="num">1</span>Name of General Manager</label><input id="gm" name="gm" required autocomplete="off"></div>
-  <div class="q"><label for="fb"><span class="num">2</span>Name of Food &amp; Beverage Director</label><input id="fb" name="fb" required autocomplete="off"></div>
-  <div class="q"><label for="hotel"><span class="num">3</span>Hotel Name</label><input id="hotel" name="hotel" required></div>
-  <div class="q"><label for="email"><span class="num">4</span>E-mail contact</label><input id="email" name="email" type="email" required inputmode="email" autocomplete="email"></div>
-  <button class="go" type="submit">Send</button>
-  <div class="err" id="err"></div>
- </form>
- <div id="thanks"><div class="check">✓</div><h3>Thank you</h3><p class="sub">Your answers were received. The Pepsi team will be in touch.</p><a class="ppt" href="../assets/presentacion.pptx" download>Download presentation (PPT) ↓</a><br><a id="again">New response</a></div>
-</div><button id="replay" type="button">Replay intro</button><div class="mock">DEMO · answers are stored on this device only</div></section>
+<div id="stage" aria-hidden="true">
+  <video id="bgsea" muted loop playsinline preload="none" tabindex="-1"></video>
+  <div id="col">
+    <video id="sea" muted loop playsinline preload="auto" poster="./media/cola_loop_poster.jpg" tabindex="-1">
+      <source src="./media/cola_loop.mp4" type="video/mp4">
+    </video>
+    <video id="cans" muted playsinline preload="auto" poster="./media/pepsi_cans_poster.jpg" tabindex="-1">
+      <source src="./media/pepsi_cans.mp4" type="video/mp4">
+    </video>
+    <div id="veil"></div>
+  </div>
+</div>
+
+<button id="skip" type="button">Skip intro<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3l5 5-5 5M10 3v10"/></svg></button>
+
+<section id="cover" aria-label="Welcome" aria-hidden="true">
+  <p class="a wel">Welcome</p>
+  <svg class="a mark" viewBox="0 0 96 96" fill="none" stroke="currentColor" aria-hidden="true">
+    <circle cx="48" cy="48" r="44.5" stroke-width="1.1" opacity=".85"/>
+    <circle cx="48" cy="48" r="39.5" stroke-width=".6" opacity=".45"/>
+    <path d="M33 27v42M63 27v42" stroke-width="3" stroke-linecap="butt"/>
+    <path d="M33 48h30" stroke-width="2.2"/>
+    <path d="M27 60c6 6 12 8 21 8s15-2 21-8" stroke-width=".9" opacity=".7"/>
+  </svg>
+  <h1 class="a hy">HYATT<small>REGENCY · PANAMA CITY</small></h1>
+  <i class="a rule"></i>
+  <button class="a cta" id="go" type="button">Start the survey<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8h11M9 3.5L13.5 8 9 12.5"/></svg></button>
+</section>
+
+<section id="survey" aria-label="Survey">
+  <div class="wrap"><div>
+  <div class="card" id="card">
+    <form id="f" novalidate>
+      <div class="top">
+        <img class="globe" src="../assets/pepsi_globe.png" alt="Pepsi" width="60" height="60">
+        <p class="eb">Pepsi · Hyatt Regency Panama&nbsp;City</p>
+        <h2>Welcome, Hyatt&nbsp;team</h2>
+        <p class="sub">Please complete this form so our team can follow up with you after your visit to our stand.</p>
+      </div>
+      <div class="q"><label for="gm"><span class="num">1</span>Name of General Manager</label><input id="gm" name="gm" required autocomplete="off"></div>
+      <div class="q"><label for="fb"><span class="num">2</span>Name of Food &amp; Beverage Director</label><input id="fb" name="fb" required autocomplete="off"></div>
+      <div class="q"><label for="hotel"><span class="num">3</span>Hotel Name</label><input id="hotel" name="hotel" required></div>
+      <div class="q"><label for="email"><span class="num">4</span>E-mail contact</label><input id="email" name="email" type="email" required inputmode="email" autocomplete="email"></div>
+      <button class="go" type="submit">Send</button>
+      <div class="err" id="err" role="alert" aria-live="polite"></div>
+    </form>
+    <div id="thanks">
+      <div class="check" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle class="ring" cx="24" cy="24" r="21" stroke-width="1.6" opacity=".6"/><path class="tick" d="M14 24.5l7 7L34 18"/></svg></div>
+      <h2>Thank you</h2>
+      <p class="sub">Your answers were received. The Pepsi team will be in touch.</p>
+      <a class="ppt" id="dl" href="../assets/presentacion.pptx" download>Download presentation (PPT)<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2.5v9M5 8l4 4 4-4M3 15.5h12"/></svg></a>
+      <button class="link" id="again" type="button">New response</button>
+    </div>
+  </div>
+  <div class="after">
+    <button class="link" id="replay" type="button">Replay intro</button>
+    <p class="mock">DEMO · answers are stored on this device only</p>
+  </div>
+  </div></div>
+</section>
+
 <div id="admin"></div>
+
 <script>
-const $=id=>document.getElementById(id),v=$('v'),intro=$('intro'),card=$('card');
-function showSurvey(){intro.classList.add('out');$('skip').style.display='none';document.body.classList.remove('lock');setTimeout(()=>card.classList.add('in'),250)}
-const ec=$('endcard');function showEnd(){if(ec.classList.contains('on'))return;ec.classList.add('on');ec.setAttribute('aria-hidden','false');$('skip').style.display='none'}
-v.addEventListener('ended',showEnd);v.addEventListener('timeupdate',()=>{if(v.duration&&v.currentTime>v.duration-0.9)showEnd()});
-$('skip').onclick=showEnd;$('go').onclick=()=>{ec.classList.remove('on');showSurvey()};
-v.play().catch(()=>showEnd());
-setTimeout(()=>{if(v.paused&&v.currentTime===0)showEnd()},6000);
-$('replay').onclick=()=>{ec.classList.remove('on');card.classList.remove('in');document.body.classList.add('lock');scrollTo(0,0);intro.classList.remove('out');$('skip').style.display='';v.currentTime=0;v.play()};
-if(new URLSearchParams(location.search).has('form')||new URLSearchParams(location.search).has('admin')){v.pause();showSurvey()}
-// encuesta (demo, localStorage; misma clave que la versión principal)
+(function(){
+const $=id=>document.getElementById(id);
+const stage=$('stage'),cans=$('cans'),sea=$('sea'),bgsea=$('bgsea'),cover=$('cover'),survey=$('survey'),skip=$('skip');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const params=new URLSearchParams(location.search);
+const XF=16/24;            // los últimos 16 cuadros de las latas ya se funden con el final del loop
+const LOOP=72/24;          // duración del loop (3 s)
+let seaStarted=false,introDone=false,raf=0,state='intro';
+
+// ---- fondo difuminado solo en pantallas anchas (no se descarga en el celular)
+if(matchMedia('(min-width:820px) and (min-aspect-ratio:4/5)').matches){bgsea.src='./media/cola_loop.mp4';bgsea.preload='auto';bgsea.play().catch(()=>{})}
+
+function startSea(at){
+  if(seaStarted)return;seaStarted=true;
+  try{sea.currentTime=Math.max(0,at||0)}catch(e){}
+  sea.play().catch(()=>{});
+}
+function tick(){
+  if(cans.duration&&!cans.paused){
+    const d=cans.duration,t=cans.currentTime;
+    if(!seaStarted&&t>=d-XF-0.04)startSea(LOOP-XF+(t-(d-XF)));   // arranca el mar en el cuadro equivalente del fundido
+    if(t>=d-0.06)finishIntro();
+  }
+  if(!introDone)raf=requestAnimationFrame(tick);
+}
+function finishIntro(){
+  if(introDone)return;introDone=true;cancelAnimationFrame(raf);
+  startSea(0);
+  cans.classList.add('gone');
+  showCover();
+}
+function showCover(){
+  state='cover';stage.classList.add('dim');
+  skip.classList.add('hide');
+  cover.classList.remove('off');cover.classList.add('on');cover.setAttribute('aria-hidden','false');
+  setTimeout(()=>$('go').focus({preventScroll:true}),reduce?100:700);
+}
+function showSurvey(){
+  state='survey';stage.classList.add('dim');
+  cover.classList.remove('on');cover.classList.add('off');cover.setAttribute('aria-hidden','true');
+  survey.classList.add('on');survey.scrollTop=0;
+  startSea(0);cans.classList.add('gone');introDone=true;cancelAnimationFrame(raf);skip.classList.add('hide');
+}
+function playIntro(){
+  introDone=false;seaStarted=false;state='intro';
+  cover.classList.remove('on','off');cover.setAttribute('aria-hidden','true');
+  survey.classList.remove('on');stage.classList.remove('dim');
+  sea.pause();cans.classList.remove('gone');
+  skip.classList.remove('hide');skip.classList.add('on');
+  try{cans.currentTime=0}catch(e){}
+  const p=cans.play();
+  if(p&&p.catch)p.catch(()=>{fallback()});
+  raf=requestAnimationFrame(tick);
+  // si el navegador no arranca el video (autoplay bloqueado, datos lentos), mostramos la portada sobre el poster / loop
+  setTimeout(()=>{if(state==='intro'&&cans.currentTime<0.05)fallback()},3200);
+}
+function fallback(){if(state!=='intro')return;cans.pause();finishIntro()}
+
+cans.addEventListener('ended',finishIntro);
+skip.addEventListener('click',()=>{cans.pause();finishIntro()});
+$('go').addEventListener('click',showSurvey);
+$('replay').addEventListener('click',()=>{scrollTo(0,0);playIntro()});
+document.addEventListener('visibilitychange',()=>{ // el loop no gasta batería en segundo plano
+  if(document.hidden){sea.pause();bgsea.pause();if(state==='intro')cans.pause()}
+  else{if(state!=='intro'){sea.play().catch(()=>{});if(bgsea.src)bgsea.play().catch(()=>{})}else cans.play().catch(()=>{})}
+});
+
+// ---- arranque
+if(params.has('form')||params.has('admin')){cans.pause();showSurvey()}
+else if(reduce){cans.pause();finishIntro();sea.pause()}   // movimiento reducido: portada sobre la cola quieta; "Replay intro" la reproduce a pedido
+else playIntro();
+
+// ---- encuesta (demo, localStorage; misma clave que la versión principal)
 const KEY='hyatt-pty-survey-v1',f=$('f'),err=$('err');
+const inputs=['gm','fb','hotel','email'].map($);
+inputs.forEach(i=>i.addEventListener('input',()=>i.classList.remove('bad')));
 f.addEventListener('submit',e=>{e.preventDefault();const d=Object.fromEntries(new FormData(f));for(const k in d)d[k]=d[k].trim();
- if(!d.gm||!d.fb||!d.hotel){err.textContent='Please answer all four questions.';return}
- if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)){err.textContent='Please enter a valid e-mail.';$('email').focus();return}
+ inputs.forEach(i=>i.classList.toggle('bad',!d[i.name]));
+ if(!d.gm||!d.fb||!d.hotel){err.textContent='Please answer all four questions.';(inputs.find(i=>!d[i.name])||inputs[0]).focus();return}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)){err.textContent='Please enter a valid e-mail.';$('email').classList.add('bad');$('email').focus();return}
  err.textContent='';const all=JSON.parse(localStorage.getItem(KEY)||'[]');all.push({...d,at:new Date().toISOString()});localStorage.setItem(KEY,JSON.stringify(all));
- f.style.display='none';$('thanks').style.display='block'});
-$('again').onclick=()=>{f.reset();f.style.display='';$('thanks').style.display='none'};
-if(new URLSearchParams(location.search).has('admin')){const a=$('admin'),rows=JSON.parse(localStorage.getItem(KEY)||'[]');a.style.display='block';
+ f.classList.add('out');
+ setTimeout(()=>{f.style.display='none';const t=$('thanks');t.style.display='block';survey.scrollTop=0;
+   requestAnimationFrame(()=>requestAnimationFrame(()=>{t.classList.add('show');$('dl').focus({preventScroll:true})}))},reduce?0:420)});
+$('again').addEventListener('click',()=>{f.reset();inputs.forEach(i=>i.classList.remove('bad'));const t=$('thanks');t.classList.remove('show');t.style.display='none';f.style.display='';requestAnimationFrame(()=>f.classList.remove('out'));$('gm').focus({preventScroll:true})});
+
+if(params.has('admin')){const a=$('admin'),rows=JSON.parse(localStorage.getItem(KEY)||'[]');a.style.display='block';
  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- a.innerHTML=`<h2>Responses (demo · this device) — ${rows.length}</h2><p><button id="csv">Download CSV</button></p><table><tr><th>Date</th><th>General Manager</th><th>F&amp;B Director</th><th>Hotel</th><th>E-mail</th></tr>${rows.map(r=>`<tr><td>${esc(r.at)}</td><td>${esc(r.gm)}</td><td>${esc(r.fb)}</td><td>${esc(r.hotel)}</td><td>${esc(r.email)}</td></tr>`).join('')}</table>`;
+ a.innerHTML=`<h2>Responses (demo · this device) — ${rows.length}</h2><p><button id="csv" type="button">Download CSV</button></p><table><tr><th>Date</th><th>General Manager</th><th>F&amp;B Director</th><th>Hotel</th><th>E-mail</th></tr>${rows.map(r=>`<tr><td>${esc(r.at)}</td><td>${esc(r.gm)}</td><td>${esc(r.fb)}</td><td>${esc(r.hotel)}</td><td>${esc(r.email)}</td></tr>`).join('')}</table>`;
  $('csv').onclick=()=>{const q=v=>'"'+String(v).replace(/"/g,'""')+'"';const csv=['date,general_manager,fb_director,hotel,email',...rows.map(r=>[r.at,r.gm,r.fb,r.hotel,r.email].map(q).join(','))].join('\n');
-  const l=document.createElement('a');l.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));l.download='hyatt-survey.csv';l.click()}}
-</script></body></html>
+  const l=document.createElement('a');l.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv'}));l.download='hyatt-survey.csv';l.click()}}
+})();
+</script>
+</body>
+</html>
