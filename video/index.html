@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hyatt Regency Panama City</title><meta name="theme-color" content="#000">
+<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}
+video{position:fixed;inset:0;width:100vw;height:100vh;object-fit:contain;background:#000}
+@media (max-aspect-ratio:3/4){video{object-fit:cover}}
+#play{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translateX(-50%);display:none;background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:12px 22px;font:600 14px system-ui,sans-serif;letter-spacing:.06em;backdrop-filter:blur(8px)}</style></head>
+<body><video id="v" src="./intro_hyatt.mp4" poster="./poster.jpg" autoplay muted playsinline preload="auto"></video>
+<button id="play" type="button">Replay ›</button>
+<script>const v=document.getElementById('v'),b=document.getElementById('play');
+v.addEventListener('ended',()=>b.style.display='block');
+b.onclick=()=>{b.style.display='none';v.currentTime=0;v.play()};
+v.play().catch(()=>{b.textContent='Play ›';b.style.display='block'});</script></body></html>
