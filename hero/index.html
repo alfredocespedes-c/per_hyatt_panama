@@ -1,0 +1,114 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hyatt Regency Panama City · Pepsi</title>
+<meta name="theme-color" content="#0b1830">
+<link rel="preload" as="image" href="bg.webp"><link rel="preload" as="image" href="fg.webp">
+<style>
+:root{--blue:#004D9D;--blue2:#2A4498;--red:#E94A10;--ice:#9fb3e8}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#000;color:#fff;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+/* ---------- HERO (Hyatt, sin Pepsi) ---------- */
+.hero{position:relative;height:200vh}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#5d8fc9}
+.layer{position:absolute;left:0;top:0;background-size:100% 100%;will-change:transform;transform-origin:50% 0}
+.bg{background-image:url(bg.webp);filter:saturate(1.05)}
+.fg{background-image:url(fg.webp)}
+.word{position:absolute;left:0;right:0;top:0;text-align:center;font-weight:900;line-height:.82;letter-spacing:-.02em;color:#fff;
+ font-size:clamp(84px,25vw,230px);text-transform:uppercase;will-change:transform,opacity;}
+.word span{display:block}
+.word .s{font-size:max(12px,.12em);letter-spacing:.45em;font-weight:700;margin:0 0 .5em .45em;color:#fff;text-shadow:0 1px 12px rgba(10,30,80,.55)}
+.nav{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:calc(14px + env(safe-area-inset-top)) 20px 14px;z-index:5;font-size:12px;letter-spacing:.24em;text-transform:uppercase}
+.nav b{font-weight:700}.nav a{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.5);padding:8px 14px;border-radius:999px;backdrop-filter:blur(8px);background:rgba(255,255,255,.12)}
+.shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,20,45,.25) 0,rgba(8,20,45,0) 22%,rgba(0,0,0,0) 60%,rgba(0,0,0,.75) 100%);pointer-events:none}
+.cue{position:absolute;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);text-align:center;font-size:11px;letter-spacing:.3em;text-transform:uppercase;z-index:4}
+.cue i{display:block;width:1px;height:38px;margin:10px auto 0;background:linear-gradient(#fff,transparent);animation:d 1.8s infinite}
+@keyframes d{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.tag{position:absolute;left:0;right:0;bottom:0;z-index:4;padding:90px 20px calc(28px + env(safe-area-inset-bottom));font-size:15px;line-height:1.5;color:#e9eef7;opacity:0;background:linear-gradient(transparent,rgba(0,0,0,.82) 45%)}
+.tag .b{display:inline-block;margin-top:14px;padding:12px 22px;border-radius:999px;background:#fff;color:#000;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none}
+.tag strong{display:block;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#fff;margin-bottom:6px}
+/* ---------- ENCUESTA (Pepsi) ---------- */
+#survey{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:72px 20px 90px;
+ background:radial-gradient(circle at 50% 0,#004D9D 0 80px,#2A4498 80px 150px,#28347C 150px 230px,#21244D 230px 320px,#171B36 320px 420px,#0A1020 420px 520px,#000 520px),#000}
+.card{width:min(560px,100%);background:rgba(10,12,20,.72);border:1px solid rgba(42,68,152,.8);border-radius:22px;padding:30px 28px 26px;box-shadow:0 30px 80px rgba(0,0,0,.45);backdrop-filter:blur(10px);opacity:0;transform:translateY(40px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.8,.2,1)}
+.card.in{opacity:1;transform:none}
+.globe{width:72px;height:72px;display:block;margin:0 0 14px;filter:drop-shadow(0 6px 18px rgba(0,0,0,.35))}
+.eyebrow{color:var(--ice);font-size:12px;letter-spacing:.3em;text-transform:uppercase}
+h1{font-weight:900;text-transform:uppercase;font-size:clamp(26px,5vw,34px);letter-spacing:.04em;margin:10px 0 4px}
+.sub{color:#c9d3e3;font-size:15px;margin:0 0 22px}
+.q{margin:0 0 16px}.q label{display:flex;gap:10px;align-items:center;font-size:14px;color:#e8edf5;margin-bottom:7px}
+.q .num{font-weight:900;color:#fff;background:var(--blue);border-radius:50%;width:22px;height:22px;display:inline-grid;place-items:center;font-size:12px;min-width:22px}
+.q input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;font:16px inherit;outline:none}
+.q input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,77,157,.45);background:rgba(255,255,255,.13)}
+button.go{width:100%;margin-top:8px;padding:15px;border:0;border-radius:999px;background:var(--red);color:#fff;box-shadow:0 10px 30px rgba(233,74,16,.4);font:700 16px inherit;letter-spacing:.08em;cursor:pointer}
+.foot{min-height:18px;margin-top:14px;font-size:13px;color:#ffb39a}
+#thanks{display:none;text-align:center}#thanks .check{width:74px;height:74px;margin:6px auto 16px;border-radius:50%;border:2px solid #fff;background:var(--red);display:grid;place-items:center;font-size:34px}
+#thanks a{color:#c9d3e3;cursor:pointer;text-decoration:underline;font-size:13px}
+.mock{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));font-size:11px;color:#8fa2bf;letter-spacing:.08em;white-space:nowrap}
+#admin{display:none;position:fixed;inset:0;overflow:auto;background:#f3f6ff;color:#000;padding:28px;z-index:9;font-size:14px}
+#admin table{border-collapse:collapse;width:100%;background:#fff}#admin th,#admin td{border:1px solid #ddd;padding:8px;text-align:left}
+@media (min-aspect-ratio:1/1){.word{font-size:clamp(84px,15vw,250px)}}
+@media (prefers-reduced-motion:reduce){.cue i{animation:none}}
+</style></head><body>
+<section class="hero" id="top">
+ <div class="stage">
+  <div class="layer bg" id="bg"></div>
+  <div class="word" id="word"><span class="s">Regency · Panama City</span><span>Hyatt</span></div>
+  <div class="layer fg" id="fg"></div>
+  <div class="shade"></div>
+  <nav class="nav"><b>Hyatt Regency</b><a href="#survey">Survey</a></nav>
+  <div class="tag" id="tag"><strong>Welcome, Hyatt team</strong>Four quick questions. It takes less than a minute.<br><a class="b" href="#survey">Start ↓</a></div>
+  <div class="cue" id="cue">Scroll<i></i></div>
+ </div>
+</section>
+<section id="survey" aria-label="Survey"><div class="card" id="card">
+ <form id="f" novalidate>
+  <img class="globe" src="../assets/pepsi_globe.png" alt="Pepsi"><div class="eyebrow">Pepsi · Hyatt Regency Panama&nbsp;City</div>
+  <h1>Welcome, Hyatt&nbsp;team</h1><p class="sub">Four quick questions from Pepsi. It takes less than a minute.</p>
+  <div class="q"><label for="gm"><span class="num">1</span>Name of General Manager</label><input id="gm" name="gm" required autocomplete="off"></div>
+  <div class="q"><label for="fb"><span class="num">2</span>Name of Food &amp; Beverage Director</label><input id="fb" name="fb" required autocomplete="off"></div>
+  <div class="q"><label for="hotel"><span class="num">3</span>Hotel Name</label><input id="hotel" name="hotel" required></div>
+  <div class="q"><label for="email"><span class="num">4</span>E-mail contact</label><input id="email" name="email" type="email" required inputmode="email" autocomplete="email"></div>
+  <button class="go" type="submit">Send</button>
+  <div class="foot" id="err"></div>
+ </form>
+ <div id="thanks"><div class="check">✓</div><h1>Thank you</h1><p class="sub">Your answers were received. The Pepsi team will be in touch.</p><a id="again">New response</a></div>
+</div><div class="mock">DEMO · answers are stored on this device only</div></section>
+<div id="admin"></div>
+<script>
+const $=id=>document.getElementById(id),reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const bg=$('bg'),fg=$('fg'),word=$('word'),tag=$('tag'),cue=$('cue'),hero=document.querySelector('.hero');
+const IW=1400,IH=3045,CROWN=.3146;let L={};
+function layout(){
+ const vw=innerWidth,vh=innerHeight,sc=Math.max(vw/IW,vh/IH)*1.02,w=IW*sc,h=IH*sc;
+ const x=(vw-w)/2,y0=Math.min(0,vh*.42-CROWN*h),y1=vh-h; // inicio: remate al 40%; fin: entrada visible
+ L={w,h,x,y0,y1:Math.min(y0,y1)};
+ for(const el of [bg,fg]){el.style.width=w+'px';el.style.height=h+'px'}
+ const wh=word.offsetHeight;L.wt=y0+CROWN*h-wh*.66; // la torre tapa la parte baja del texto
+ tick()}
+function tick(){
+ const max=hero.offsetHeight-innerHeight,p=Math.min(1,Math.max(0,scrollY/max)),e=p*p*(3-2*p);
+ const yb=L.y0+(L.y1-L.y0)*e, yf=yb, zf=reduce?1:1+e*.06;
+ bg.style.transform=`translate(${L.x}px,${yb}px)`;
+ fg.style.transform=`translate(${L.x}px,${yf}px) scale(${zf})`;
+ word.style.transform=`translateY(${L.wt+(yb-L.y0)*.55}px)`;
+ word.style.opacity=1-Math.max(0,(p-.45)/.35);
+ tag.style.opacity=Math.min(1,Math.max(0,(p-.55)/.3));
+ cue.style.opacity=1-p*3;tag.style.pointerEvents=p>.6?'auto':'none';
+}
+addEventListener('scroll',()=>requestAnimationFrame(tick),{passive:true});addEventListener('resize',layout);document.fonts.ready.then(layout);layout();
+new IntersectionObserver(e=>e.forEach(x=>x.isIntersecting&&$('card').classList.add('in')),{threshold:.15}).observe($('card'));
+// encuesta (demo, localStorage; misma clave que la versión principal)
+const KEY='hyatt-pty-survey-v1',f=$('f'),err=$('err');
+f.addEventListener('submit',e=>{e.preventDefault();const d=Object.fromEntries(new FormData(f));for(const k in d)d[k]=d[k].trim();
+ if(!d.gm||!d.fb||!d.hotel){err.textContent='Please answer all four questions.';return}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)){err.textContent='Please enter a valid e-mail.';$('email').focus();return}
+ err.textContent='';const all=JSON.parse(localStorage.getItem(KEY)||'[]');all.push({...d,at:new Date().toISOString()});localStorage.setItem(KEY,JSON.stringify(all));
+ f.style.display='none';$('thanks').style.display='block'});
+$('again').onclick=()=>{f.reset();f.style.display='';$('thanks').style.display='none'};
+if(new URLSearchParams(location.search).has('admin')){const a=$('admin'),rows=JSON.parse(localStorage.getItem(KEY)||'[]');a.style.display='block';
+ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ a.innerHTML=`<h2>Responses (demo · this device) — ${rows.length}</h2><p><button id="csv">Download CSV</button></p><table><tr><th>Date</th><th>General Manager</th><th>F&amp;B Director</th><th>Hotel</th><th>E-mail</th></tr>${rows.map(r=>`<tr><td>${esc(r.at)}</td><td>${esc(r.gm)}</td><td>${esc(r.fb)}</td><td>${esc(r.hotel)}</td><td>${esc(r.email)}</td></tr>`).join('')}</table>`;
+ $('csv').onclick=()=>{const q=v=>'"'+String(v).replace(/"/g,'""')+'"';const csv=['date,general_manager,fb_director,hotel,email',...rows.map(r=>[r.at,r.gm,r.fb,r.hotel,r.email].map(q).join(','))].join('\n');
+  const l=document.createElement('a');l.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));l.download='hyatt-survey.csv';l.click()}}
+</script></body></html>
