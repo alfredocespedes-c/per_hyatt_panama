@@ -248,7 +248,7 @@ svg{display:block}
   </div>
   <div class="after">
     <button class="link" id="replay" type="button">Replay intro</button>
-    <p class="mock">DEMO · answers are stored on this device only</p>
+    <p class="mock">Answers are sent to the Pepsi team</p>
   </div>
   </div></div>
 </section>
@@ -339,6 +339,11 @@ f.addEventListener('submit',e=>{e.preventDefault();const d=Object.fromEntries(ne
  if(!d.gm||!d.fb||!d.hotel){err.textContent='Please answer all four questions.';(inputs.find(i=>!d[i.name])||inputs[0]).focus();return}
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)){err.textContent='Please enter a valid e-mail.';$('email').classList.add('bad');$('email').focus();return}
  err.textContent='';const all=JSON.parse(localStorage.getItem(KEY)||'[]');all.push({...d,at:new Date().toISOString()});localStorage.setItem(KEY,JSON.stringify(all));
+ // envío por correo (FormSubmit). Si falla, la respuesta igual queda guardada en este equipo.
+ fetch('https://formsubmit.co/ajax/andrea.awad@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+  body:JSON.stringify({_subject:'Pepsi · Hyatt survey: '+d.hotel,_template:'table',_captcha:'false',
+   'General Manager':d.gm,'Food & Beverage Director':d.fb,'Hotel':d.hotel,'E-mail':d.email,'Date':new Date().toLocaleString('en-US',{timeZone:'America/Panama'})})})
+  .then(r=>r.json()).then(j=>console.log('mail',j)).catch(e=>console.warn('mail failed',e));
  f.classList.add('out');
  setTimeout(()=>{f.style.display='none';const t=$('thanks');t.style.display='block';survey.scrollTop=0;
    requestAnimationFrame(()=>requestAnimationFrame(()=>{t.classList.add('show');$('dl').focus({preventScroll:true})}))},reduce?0:420)});
