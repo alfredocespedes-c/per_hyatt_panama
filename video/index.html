@@ -1,13 +1,79 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Hyatt Regency Panama City</title><meta name="theme-color" content="#000">
-<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}
-video{position:fixed;inset:0;width:100vw;height:100vh;object-fit:contain;background:#000}
-@media (max-aspect-ratio:3/4){video{object-fit:cover}}
-#play{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translateX(-50%);display:none;background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:12px 22px;font:600 14px system-ui,sans-serif;letter-spacing:.06em;backdrop-filter:blur(8px)}</style></head>
-<body><video id="v" src="./intro_hyatt.mp4" poster="./poster.jpg" autoplay muted playsinline preload="auto"></video>
-<button id="play" type="button">Replay ›</button>
-<script>const v=document.getElementById('v'),b=document.getElementById('play');
-v.addEventListener('ended',()=>b.style.display='block');
-b.onclick=()=>{b.style.display='none';v.currentTime=0;v.play()};
-v.play().catch(()=>{b.textContent='Play ›';b.style.display='block'});</script></body></html>
+<title>Hyatt Regency Panama City · Pepsi</title><meta name="theme-color" content="#000">
+<link rel="preload" as="video" href="./intro_hyatt.mp4">
+<style>:root{--bg:#0A1020;--deep:#171B36;--navy:#21244D;--ind:#28347C;--blue2:#2A4498;--blue:#004D9D;--red:#E94A10;--ice:#9fb3e8;--txt:#fff;--r:26px;--ease:cubic-bezier(.22,1,.36,1);--mut:#9aa4b8}
+*{box-sizing:border-box}html,body{margin:0;background:#000;color:#fff;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+body.lock{overflow:hidden}
+#intro{position:fixed;inset:0;z-index:5;background:#000;transition:opacity .9s var(--ease)}
+#intro video{width:100%;height:100%;object-fit:contain;display:block}
+@media (max-aspect-ratio:3/4){#intro video{object-fit:cover}}
+#intro.out{opacity:0;pointer-events:none}
+#skip{position:fixed;right:18px;top:calc(14px + env(safe-area-inset-top));z-index:6;background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:9px 16px;font:600 13px/1 inherit;letter-spacing:.06em;backdrop-filter:blur(8px);cursor:pointer}
+#survey{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center}
+/* ---------- BRIDGE + SURVEY (Pepsi) ---------- */
+.bridge{text-align:center;padding:90px 22px 30px;color:var(--mut);font-size:12px;letter-spacing:.3em;text-transform:uppercase}
+.bridge i{display:block;width:1px;height:56px;margin:16px auto 0;background:linear-gradient(var(--mut),transparent)}
+#survey{position:relative;padding:40px 16px calc(90px + env(safe-area-inset-bottom));background:radial-gradient(circle at 50% 0,#004D9D 0 80px,#2A4498 80px 150px,#28347C 150px 230px,#21244D 230px 320px,#171B36 320px 420px,#0A1020 420px)}
+.card{width:min(560px,100%);margin:0 auto;background:rgba(10,16,32,.72);border:1px solid rgba(42,68,152,.7);border-radius:var(--r);padding:30px 24px 24px;box-shadow:0 40px 90px rgba(0,0,0,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+ opacity:0;transform:translateY(36px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.card.in{opacity:1;transform:none}
+.globe{width:64px;height:64px;margin:0 0 14px;object-fit:contain}
+.card .eb{color:var(--ice);font-size:11px;letter-spacing:.3em;text-transform:uppercase}
+.card h3{font-weight:900;text-transform:uppercase;font-size:clamp(24px,5vw,32px);letter-spacing:.02em;margin:10px 0 4px}
+.sub{color:#dde4f3;font-size:15px;margin:0 0 22px}
+.q{margin:0 0 15px}.q label{display:flex;gap:10px;align-items:center;font-size:14px;color:#e8edf5;margin-bottom:7px}
+.q .num{font-weight:800;background:var(--blue);border-radius:50%;width:22px;height:22px;min-width:22px;display:grid;place-items:center;font-size:12px}
+.q input{width:100%;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);color:#fff;font:16px inherit;outline:none;transition:border-color .2s,background .2s,box-shadow .2s}
+.q input:focus{border-color:#3b78d0;box-shadow:0 0 0 3px rgba(0,77,157,.4);background:rgba(255,255,255,.1)}
+button.go{width:100%;margin-top:8px;padding:16px;border:0;border-radius:999px;background:var(--red);color:#fff;box-shadow:0 12px 30px rgba(233,74,16,.35);font:700 15px inherit;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:transform .15s var(--ease)}
+button.go:active{transform:scale(.97)}
+.err{min-height:18px;margin-top:12px;font-size:13px;color:#ffb39a}
+#thanks{display:none;text-align:center}#thanks .check{width:72px;height:72px;margin:6px auto 16px;border-radius:50%;background:var(--red);display:grid;place-items:center;font-size:32px}
+#thanks a{color:#c9d3e3;cursor:pointer;text-decoration:underline;font-size:13px}
+.mock{text-align:center;margin-top:18px;font-size:11px;color:#9aa4b8;letter-spacing:.08em}
+#admin{display:none;position:fixed;inset:0;overflow:auto;background:#f3f6ff;color:#000;padding:28px;z-index:9;font-size:14px}
+#admin table{border-collapse:collapse;width:100%;background:#fff}#admin th,#admin td{border:1px solid #ddd;padding:8px;text-align:left}
+@media (prefers-reduced-motion:reduce){.card{opacity:1;transform:none;transition:none}.cue{animation:none}}
+
+#replay{display:block;margin:14px auto 0;background:none;border:0;color:#c9d3e3;text-decoration:underline;font-size:13px;cursor:pointer}
+</style></head><body class="lock">
+<div id="intro"><video id="v" src="./intro_hyatt.mp4" poster="./poster.jpg" autoplay muted playsinline preload="auto"></video></div>
+<button id="skip" type="button">Skip intro ›</button>
+<section id="survey" aria-label="Survey"><div class="card" id="card">
+ <form id="f" novalidate>
+  <img class="globe" src="../assets/pepsi_globe.png" alt="Pepsi">
+  <div class="eb">Pepsi · Hyatt Regency Panama&nbsp;City</div>
+  <h3>Welcome, Hyatt&nbsp;team</h3><p class="sub">Please complete this form so our team can follow up with you after your visit to our stand.</p>
+  <div class="q"><label for="gm"><span class="num">1</span>Name of General Manager</label><input id="gm" name="gm" required autocomplete="off"></div>
+  <div class="q"><label for="fb"><span class="num">2</span>Name of Food &amp; Beverage Director</label><input id="fb" name="fb" required autocomplete="off"></div>
+  <div class="q"><label for="hotel"><span class="num">3</span>Hotel Name</label><input id="hotel" name="hotel" required></div>
+  <div class="q"><label for="email"><span class="num">4</span>E-mail contact</label><input id="email" name="email" type="email" required inputmode="email" autocomplete="email"></div>
+  <button class="go" type="submit">Send</button>
+  <div class="err" id="err"></div>
+ </form>
+ <div id="thanks"><div class="check">✓</div><h3>Thank you</h3><p class="sub">Your answers were received. The Pepsi team will be in touch.</p><a id="again">New response</a></div>
+</div><button id="replay" type="button">Replay intro</button><div class="mock">DEMO · answers are stored on this device only</div></section>
+<div id="admin"></div>
+<script>
+const $=id=>document.getElementById(id),v=$('v'),intro=$('intro'),card=$('card');
+function showSurvey(){intro.classList.add('out');$('skip').style.display='none';document.body.classList.remove('lock');setTimeout(()=>card.classList.add('in'),250)}
+v.addEventListener('ended',showSurvey);$('skip').onclick=showSurvey;
+v.play().catch(()=>showSurvey());
+setTimeout(()=>{if(v.paused&&v.currentTime===0)showSurvey()},6000);
+$('replay').onclick=()=>{card.classList.remove('in');document.body.classList.add('lock');scrollTo(0,0);intro.classList.remove('out');$('skip').style.display='';v.currentTime=0;v.play()};
+if(new URLSearchParams(location.search).has('form')||new URLSearchParams(location.search).has('admin')){v.pause();showSurvey()}
+// encuesta (demo, localStorage; misma clave que la versión principal)
+const KEY='hyatt-pty-survey-v1',f=$('f'),err=$('err');
+f.addEventListener('submit',e=>{e.preventDefault();const d=Object.fromEntries(new FormData(f));for(const k in d)d[k]=d[k].trim();
+ if(!d.gm||!d.fb||!d.hotel){err.textContent='Please answer all four questions.';return}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)){err.textContent='Please enter a valid e-mail.';$('email').focus();return}
+ err.textContent='';const all=JSON.parse(localStorage.getItem(KEY)||'[]');all.push({...d,at:new Date().toISOString()});localStorage.setItem(KEY,JSON.stringify(all));
+ f.style.display='none';$('thanks').style.display='block'});
+$('again').onclick=()=>{f.reset();f.style.display='';$('thanks').style.display='none'};
+if(new URLSearchParams(location.search).has('admin')){const a=$('admin'),rows=JSON.parse(localStorage.getItem(KEY)||'[]');a.style.display='block';
+ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ a.innerHTML=`<h2>Responses (demo · this device) — ${rows.length}</h2><p><button id="csv">Download CSV</button></p><table><tr><th>Date</th><th>General Manager</th><th>F&amp;B Director</th><th>Hotel</th><th>E-mail</th></tr>${rows.map(r=>`<tr><td>${esc(r.at)}</td><td>${esc(r.gm)}</td><td>${esc(r.fb)}</td><td>${esc(r.hotel)}</td><td>${esc(r.email)}</td></tr>`).join('')}</table>`;
+ $('csv').onclick=()=>{const q=v=>'"'+String(v).replace(/"/g,'""')+'"';const csv=['date,general_manager,fb_director,hotel,email',...rows.map(r=>[r.at,r.gm,r.fb,r.hotel,r.email].map(q).join(','))].join('\n');
+  const l=document.createElement('a');l.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));l.download='hyatt-survey.csv';l.click()}}
+</script></body></html>
