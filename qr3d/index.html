@@ -1,0 +1,79 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pepsi · QR</title><meta name="theme-color" content="#000">
+<style>
+html,body{margin:0;height:100%;background:#000;color:#fff;font-family:"Segoe UI",system-ui,Arial,sans-serif;overflow:hidden}
+canvas{display:block;position:fixed;inset:0;width:100vw;height:100vh}
+.ui{position:fixed;left:0;right:0;bottom:calc(22px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:10px;z-index:2}
+.ui button{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:10px 18px;font:700 12px inherit;letter-spacing:.16em;text-transform:uppercase;backdrop-filter:blur(10px);cursor:pointer}
+.ui button.on{background:#1A1AE6;border-color:#1A1AE6}
+.cap{position:fixed;top:calc(22px + env(safe-area-inset-top));left:0;right:0;text-align:center;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:#B8B8FF;z-index:2;transition:opacity .6s}
+</style>
+<script type="importmap">{"imports":{"three":"../vendor/three.module.js"}}</script></head><body>
+<div class="cap" id="cap">Pepsi · Hyatt Regency Panama City</div>
+<div class="ui"><button id="bN">Pepsi</button><button id="bZ">Zero Sugar</button><button id="bR">Replay</button></div>
+<script type="module">
+import * as THREE from 'three';
+const QR={"n": 41, "m": "1111111011000101110110101000000000111111110000010010100100101110011101100101000001101110101111001011010101101100001010111011011101001010010011101011010010010101110110111010101100010001000010001011001011101100000100100010011001011010010101010000011111111010101010101010101010101010111111100000000110001111011100110100001000000000000001100010110110011000100001000010101011100000110010000111101010101011100011001100110011011110110000111110111000101110000111110000111101110111010111010011010010001010101011110101100001000011100010110000111101101100110011010010101110011001110011111000111100111011111001011111101100111000110000010110101110001011011001011001110111111110101011001001000000000000010100111111000000111010101000110110111011111110010001011111001011100101101101011110111010111000001110000001001110100000010010011011111010100000000110010101001001001000001010010000010110001010000101111011100011100000110110111110100101000000111000101111100000111001001110000111001101110101110110010011101100100110011100000101100111110001000001001101011111010111100011011001111011000101101001001011100100110101101100000001100110100001101001000011111100101110110111001111010110111100001100010111000101100101011001101001101100011100111111011110011100011000110011000011100011100101000010110101101100101000111110010010000101011000100001101111011111010110011111011111111000000000010011101010001100111001110001010011111110011101100001100110010001101010100100000101001101011010010110000011000100001011101000101000000101000010100111111100110111010011000001010010111011001100100011101110100000111001011100010101011111100101000001000111111011010101101001001101110111111110000101000000011001001101010110100"}; // matriz del QR real (versión 6, corrección H) -> página de la encuesta
+const N=QR.n, M=QR.m;
+const Q=new URLSearchParams(location.search), FIX=Q.has('t')?+Q.get('t'):null;
+let zero=Q.has('zero');
+const r=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});r.setPixelRatio(Math.min(devicePixelRatio,2));document.body.appendChild(r.domElement);
+r.toneMapping=THREE.ACESFilmicToneMapping;r.outputColorSpace=THREE.SRGBColorSpace;
+const scene=new THREE.Scene();const cam=new THREE.PerspectiveCamera(30,1,.1,500);
+scene.add(new THREE.HemisphereLight(0xffffff,0x202040,1.6));const key=new THREE.DirectionalLight(0xffffff,2.4);key.position.set(20,30,40);scene.add(key);
+const rim=new THREE.DirectionalLight(0x4d4dff,2);rim.position.set(-30,10,-20);scene.add(rim);
+
+// celdas oscuras del QR (destino)
+const dark=[];for(let y=0;y<N;y++)for(let x=0;x<N;x++)if(M[y*N+x]==='1')dark.push([x-(N-1)/2,(N-1)/2-y]);
+const C=dark.length;
+// lata hecha de cubos: puntos sobre el cilindro, ordenados por ángulo para que el vuelo sea coherente
+const R=8,H=22,cols=Math.round(Math.sqrt(C*2*Math.PI*R/H)),rows=Math.ceil(C/cols);
+const can=[];for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){if(can.length>=C)break;const a=i/cols*Math.PI*2,y=(j/(rows-1)-.5)*H;can.push([a,y])}
+dark.sort((p,q)=>p[0]-q[0]||p[1]-q[1]);can.sort((p,q)=>Math.sin(p[0]-Math.PI/2)-Math.sin(q[0]-Math.PI/2)||p[1]-q[1]);
+// colores de la lata (Pepsi azul / Zero negra) con el globo al frente
+const col=new THREE.Color();
+function canColor(a,y,z){const fx=Math.sin(a)*R,front=Math.cos(a)>0;const gx=fx,gy=y-1.5,gr=Math.hypot(gx,gy);
+ if(Math.abs(y)>H/2-1.2)return col.set(0xc9ccd6); // aros de aluminio
+ if(front&&gr<6.2){if(gr>5.4)return col.set(z?0x1A1AE6:0xffffff);const w=Math.sin(gx*.35)*1.2;if(gy>1+w)return col.set(0xFF1400);if(gy>-1+w)return col.set(Math.abs(gy-w)<.6&&Math.abs(gx)<4.6?0x000000:0xffffff);return col.set(0x0E0E96)}
+ if(z)return col.set(Math.sin(a*3+y*.3)>.9?0x1A1AE6:0x050505);
+ return col.set(Math.sin(a*3+y*.3)>.6?0x000000:(y>3?0x1A1AE6:0x0E0E96))}
+const box=new THREE.BoxGeometry(.94,.94,.94);
+const mat=new THREE.MeshStandardMaterial({roughness:.35,metalness:.35});
+const mesh=new THREE.InstancedMesh(box,mat,C);scene.add(mesh);
+const card=new THREE.Mesh(new THREE.PlaneGeometry(N+10,N+10),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,toneMapped:false}));card.position.z=-.6;scene.add(card);
+const glow=new THREE.Mesh(new THREE.PlaneGeometry(N+16,N+16),new THREE.MeshBasicMaterial({color:0x1A1AE6,transparent:true,opacity:0}));glow.position.z=-.8;scene.add(glow);
+const qrBlack=new THREE.Color(0x000000),tmp=new THREE.Object3D(),c0=new THREE.Color();
+const seed=dark.map((_,i)=>((i*2654435761)%1000)/1000);
+function paint(){for(let i=0;i<C;i++){}}
+const ease=t=>t<0?0:t>1?1:1-Math.pow(1-t,4), sm=t=>t<0?0:t>1?1:t*t*(3-2*t);
+function frame(t){
+ const spin=t*1.1;
+ for(let i=0;i<C;i++){
+  const [a,y]=can[i],[qx,qy]=dark[i];const aa=a+spin;
+  const sx=Math.sin(aa)*R,sz=Math.cos(aa)*R;
+  const k=ease((t-2.6-seed[i]*1.1-(qx+N/2)/N*.6)/1.4); // vuelo escalonado
+  const lift=Math.sin(k*Math.PI)*6*(seed[i]-.3);
+  tmp.position.set(sx+(qx-sx)*k,y*(1-k)+qy*k,sz*(1-k)+lift);
+  tmp.rotation.set((1-k)*0,(1-k)*(-aa),k<1?Math.sin(k*Math.PI)*seed[i]*3:0);
+  const s=1-.08*Math.sin(k*Math.PI);tmp.scale.setScalar(k>=1?1.0:s);tmp.updateMatrix();mesh.setMatrixAt(i,tmp.matrix);
+  canColor(a,y,zero);c0.copy(col).lerp(qrBlack,sm((k-.55)/.45));mesh.setColorAt(i,c0)}
+ mesh.instanceMatrix.needsUpdate=true;mesh.instanceColor.needsUpdate=true;
+ const f=sm((t-3.6)/1.2);card.material.opacity=f;glow.material.opacity=f*.35;
+ mat.metalness=.35*(1-f);mat.roughness=.35+.6*f;
+ // cámara: órbita leve sobre la lata -> frente exacto para escanear
+ const e=sm((t-2.6)/2.2),ang=(1-e)*.35;cam.position.set(Math.sin(ang)*90,(1-e)*14,Math.cos(ang)*90);cam.lookAt(0,0,0);
+ document.getElementById('cap').style.opacity=1-f*.0;
+ r.render(scene,cam)}
+function size(){const w=innerWidth,h=innerHeight;r.setSize(w,h,false);cam.aspect=w/h;
+ const need=(N+10)/2/Math.tan(THREE.MathUtils.degToRad(cam.fov/2)); cam.position.z=Math.max(need,need/cam.aspect); cam.updateProjectionMatrix();
+ dist=Math.max(need,need/cam.aspect)}
+let dist=90;addEventListener('resize',()=>{size();if(FIX!==null)frame(FIX)});size();
+// usa la distancia calculada
+const _frame=frame;frame=function(t){_frame(t);cam.position.multiplyScalar(dist/90);cam.lookAt(0,0,0);r.render(scene,cam)};
+let t0=null;function loop(ts){if(t0===null)t0=ts;frame((ts-t0)/1000);raf=requestAnimationFrame(loop)}let raf;
+function start(){cancelAnimationFrame(raf);t0=null;if(FIX!==null){frame(FIX);return}if(matchMedia('(prefers-reduced-motion: reduce)').matches){frame(99);return}raf=requestAnimationFrame(loop)}
+const set=z=>{zero=z;document.getElementById('bN').classList.toggle('on',!z);document.getElementById('bZ').classList.toggle('on',z);start()};
+document.getElementById('bN').onclick=()=>set(false);document.getElementById('bZ').onclick=()=>set(true);document.getElementById('bR').onclick=start;
+set(zero);
+</script></body></html>
