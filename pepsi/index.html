@@ -11,7 +11,7 @@
 <style>
 @font-face{font-family:"Marcellus";src:url(./media/fonts/marcellus.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
 :root{
-  --red:#E94A10;--pblue:#2B2F88;--pblue-h:#3A3FA8;--blue:#004D9D;--blue2:#2A4498;--ind:#28347C;--navy:#21244D;--deep:#171B36;--ink:#0a0d1f;
+  --red:#FF1400;--pblue:#0E0E96;--pblue-h:#2424B4;--blue:#004D9D;--blue2:#2A4498;--ind:#28347C;--navy:#21244D;--deep:#171B36;--ink:#0a0d1f;
   --cola:#1a0a04;--cola2:#3a1507;--caramel:#b8692a;--foam:#f1dfc6;--cream:#e8d6c0;
   --ice:#c7d2f2;--txt:#fff;
   --ease:cubic-bezier(.16,1,.3,1);--ease-io:cubic-bezier(.77,0,.175,1);
@@ -74,11 +74,11 @@ svg{display:block}
 .rule{width:44px;height:1px;background:linear-gradient(90deg,transparent,var(--foam),transparent);margin:30px auto 32px;opacity:.9}
 .cta{display:inline-flex;align-items:center;gap:12px;max-width:min(92vw,560px);text-align:left;line-height:1.3;border:0;border-radius:999px;background:var(--pblue);color:#fff;padding:18px 30px 18px 32px;
   font-weight:800;font-size:14px;letter-spacing:.16em;text-transform:uppercase;
-  box-shadow:0 14px 40px rgba(43,47,136,.6),inset 0 1px 0 rgba(255,255,255,.22);
+  box-shadow:0 14px 40px rgba(14,14,150,.6),inset 0 1px 0 rgba(255,255,255,.22);
   transition:transform .16s var(--ease),box-shadow .2s ease,background .2s ease}
 .cta svg{width:16px;height:16px;transition:transform .25s var(--ease)}
-.cta:active{transform:scale(.97);box-shadow:0 8px 24px rgba(43,47,136,.5)}
-@media (hover:hover) and (pointer:fine){.cta:hover{background:var(--pblue-h);box-shadow:0 18px 48px rgba(43,47,136,.7),inset 0 1px 0 rgba(255,255,255,.22)}.cta:hover svg{transform:translateX(3px)}}
+.cta:active{transform:scale(.97);box-shadow:0 8px 24px rgba(14,14,150,.5)}
+@media (hover:hover) and (pointer:fine){.cta:hover{background:var(--pblue-h);box-shadow:0 18px 48px rgba(14,14,150,.7),inset 0 1px 0 rgba(255,255,255,.22)}.cta:hover svg{transform:translateX(3px)}}
 
 /* ---------- SURVEY: glass card over the cola ---------- */
 #survey{position:fixed;inset:0;z-index:12;overflow:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent;
@@ -111,7 +111,7 @@ svg{display:block}
 .q input:focus{border-color:#4d8ae0;box-shadow:0 0 0 3px rgba(0,77,157,.45);background:rgba(255,255,255,.11);outline:none}
 .q input.bad{border-color:#ff8a65;box-shadow:0 0 0 3px rgba(233,74,16,.3)}
 .go{width:100%;margin-top:8px;padding:17px;border:0;border-radius:999px;background:var(--pblue);color:#fff;font-weight:800;font-size:15px;letter-spacing:.12em;text-transform:uppercase;
-  box-shadow:0 12px 30px rgba(43,47,136,.55),inset 0 1px 0 rgba(255,255,255,.2);transition:transform .16s var(--ease),background .2s ease,opacity .45s var(--ease)}
+  box-shadow:0 12px 30px rgba(14,14,150,.55),inset 0 1px 0 rgba(255,255,255,.2);transition:transform .16s var(--ease),background .2s ease,opacity .45s var(--ease)}
 .go:active{transform:scale(.97)}
 @media (hover:hover) and (pointer:fine){.go:hover{background:var(--pblue-h)}}
 .err{min-height:20px;margin-top:12px;font-size:13px;color:#ffb39a;line-height:1.3}
@@ -119,7 +119,7 @@ svg{display:block}
 #f.out{opacity:0;filter:blur(12px);transform:scale(.98);pointer-events:none}
 #thanks{display:none;text-align:center;opacity:0;filter:blur(10px);transform:scale(.985);transition:opacity .6s var(--ease),filter .6s var(--ease),transform .6s var(--ease)}
 #thanks.show{opacity:1;filter:none;transform:none}
-.check{width:84px;height:84px;margin:6px auto 18px;border-radius:50%;background:var(--pblue);display:grid;place-items:center;box-shadow:0 14px 40px rgba(43,47,136,.6),inset 0 1px 0 rgba(255,255,255,.25)}
+.check{width:84px;height:84px;margin:6px auto 18px;border-radius:50%;background:var(--pblue);display:grid;place-items:center;box-shadow:0 14px 40px rgba(14,14,150,.6),inset 0 1px 0 rgba(255,255,255,.25)}
 .check svg{width:40px;height:40px}
 .check .ring{stroke-dasharray:160;stroke-dashoffset:160}
 .check .tick{stroke-dasharray:40;stroke-dashoffset:40}
@@ -129,7 +129,7 @@ svg{display:block}
 #thanks h2{margin-bottom:8px}
 #thanks .sub{margin-left:auto;margin-right:auto}
 .ppt{display:inline-flex;align-items:center;gap:12px;margin:8px auto 18px;padding:15px 24px 15px 26px;border-radius:999px;background:var(--pblue);color:#fff;text-decoration:none;font-weight:700;font-size:14px;letter-spacing:.08em;
-  box-shadow:0 12px 30px rgba(43,47,136,.55),inset 0 1px 0 rgba(255,255,255,.18);transition:transform .16s var(--ease),background .2s ease}
+  box-shadow:0 12px 30px rgba(14,14,150,.55),inset 0 1px 0 rgba(255,255,255,.18);transition:transform .16s var(--ease),background .2s ease}
 .ppt svg{width:18px;height:18px}
 .ppt:active{transform:scale(.97)}
 .ppt[aria-busy=true]{opacity:.7;pointer-events:none}
