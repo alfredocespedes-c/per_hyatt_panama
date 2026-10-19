@@ -342,7 +342,7 @@ f.addEventListener('submit',e=>{e.preventDefault();const d=Object.fromEntries(ne
  err.textContent='';const all=JSON.parse(localStorage.getItem(KEY)||'[]');all.push({...d,at:new Date().toISOString()});localStorage.setItem(KEY,JSON.stringify(all));
  // envío por correo (FormSubmit). Si falla, la respuesta igual queda guardada en este equipo.
  fetch('https://formsubmit.co/ajax/andrea.awad@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
-  body:JSON.stringify({_subject:'Pepsi · Hyatt survey: '+d.hotel,_template:'table',_captcha:'false',
+  body:JSON.stringify({_subject:'Pepsi · Hyatt survey: '+d.hotel,_cc:'andrea.awad@pepsico.com',_template:'table',_captcha:'false',
    'General Manager':d.gm,'Food & Beverage Director':d.fb,'Hotel':d.hotel,'E-mail':d.email,'Date':new Date().toLocaleString('en-US',{timeZone:'America/Panama'})})})
   .then(r=>r.json()).then(j=>console.log('mail',j)).catch(e=>console.warn('mail failed',e));
  f.classList.add('out');
